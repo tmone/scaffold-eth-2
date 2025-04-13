@@ -1,6 +1,7 @@
 {
   "name": "@se-2/hardhat",
   "version": "0.0.1",
+  "type": "commonjs",
   "scripts": {
     "account": "hardhat run scripts/listAccount.ts",
     "account:generate": "hardhat run scripts/generateAccount.ts",
@@ -30,6 +31,7 @@
     "@typechain/ethers-v5": "^11.1.2",
     "@typechain/hardhat": "^9.1.0",
     "@types/eslint": "^9.6.1",
+    "@types/has": "^1",
     "@types/mocha": "^10.0.10",
     "@types/prettier": "^3.0.0",
     "@types/qrcode": "^1.5.5",
@@ -44,10 +46,11 @@
     "hardhat-deploy": "^0.12.4",
     "hardhat-deploy-ethers": "^0.4.2",
     "hardhat-gas-reporter": "^2.2.1",
+    "has": "^1.0.4",
     "prettier": "^3.5.3",
     "prettier-plugin-solidity": "^1.4.1",
     "solidity-coverage": "^0.8.13",
-    "ts-node": "^10.9.1",
+    "ts-node": "^10.9.2",
     "typechain": "^8.3.2",
     "typescript": "^5.8.2"
   },

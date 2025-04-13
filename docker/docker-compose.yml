@@ -1,0 +1,61 @@
+version: '3.8'
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: opensea-mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    restart: unless-stopped
+      
+  postgres:
+    image: postgres:14
+    container_name: opensea-postgres
+    environment:
+      POSTGRES_PASSWORD: yourpassword
+      POSTGRES_USER: opensea
+      POSTGRES_DB: opensea_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+      
+  redis:
+    image: redis:latest
+    container_name: opensea-redis
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+
+  # Component for full-text search
+  elasticsearch:
+    image: elasticsearch:7.17.0
+    container_name: opensea-elasticsearch
+    environment:
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    restart: unless-stopped
+
+  # IPFS node for metadata storage
+  ipfs:
+    image: ipfs/kubo:latest
+    container_name: opensea-ipfs
+    ports:
+      - "4001:4001"
+      - "5001:5001"
+      - "8080:8080"
+    volumes:
+      - ipfs_data:/data/ipfs
+    restart: unless-stopped
+
+volumes:
+  mongodb_data:
+  postgres_data:
+  elasticsearch_data:
+  ipfs_data:

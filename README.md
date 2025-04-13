@@ -25,57 +25,138 @@ Before you begin, you need to install the following tools:
 - Yarn ([v1](https://classic.yarnpkg.com/en/docs/install/) or [v2+](https://yarnpkg.com/getting-started/install))
 - [Git](https://git-scm.com/downloads)
 
-## Quickstart
+## Quick Start for OpenSea QC
 
-To get started with Scaffold-ETH 2, follow the steps below:
+OpenSea QC has been enhanced with separate scripts to start the blockchain network and UI independently. This allows you to restart only the component that may have encountered issues, rather than restarting the entire environment.
 
-1. Install the latest version of Scaffold-ETH 2
+### Installing Dependencies
 
+Before running any scripts, make sure to install all the necessary dependencies:
+
+```bash
+# Navigate to the project directory
+cd opensea-qc
+
+# Install root dependencies
+yarn install
+
+# Install hardhat package dependencies
+cd packages/hardhat
+yarn install
+cd ../..
+
+# Install nextjs package dependencies
+cd packages/nextjs
+yarn install
+cd ../..
+
+# Install component dependencies
+cd components/seaport
+yarn install
+cd ../..
+
+cd components/erc721
+yarn install
+cd ../..
+
+cd components/erc1155
+yarn install
+cd ../..
+
+cd components/operator-filter
+yarn install
+cd ../..
 ```
-npx create-eth@latest
+
+### Starting Docker Services
+
+The OpenSea QC testing environment requires several supporting services that run in Docker containers:
+
+```bash
+# Navigate to the project directory
+cd opensea-qc
+
+# Start all Docker services
+./scripts/start-docker-services.sh
 ```
 
-This command will install all the necessary packages and dependencies, so it might take a while.
+This script will:
+1. Stop and remove any existing OpenSea QC Docker containers
+2. Free up any ports that might be in use (27017, 5432, 6379, 9200, 4001, 5001, 8080)
+3. Start the following services:
+   - MongoDB (accessible at mongodb://localhost:27017)
+   - PostgreSQL (accessible at postgresql://opensea:yourpassword@localhost:5432/opensea_db)
+   - Redis (accessible at localhost:6379)
+   - Elasticsearch (accessible at http://localhost:9200)
+   - IPFS (accessible at http://localhost:5001)
 
-> [!NOTE]
-> You can also initialize your project with one of our extensions to add specific features or starter-kits. Learn more in our [extensions documentation](https://docs.scaffoldeth.io/extensions/).
+> Note: Docker and Docker Compose must be installed on your system for this to work.
 
-2. Run a local network in the first terminal:
+### Starting the Blockchain Network
 
-```
-yarn chain
-```
+To start the local blockchain network with all necessary contracts deployed:
 
-This command starts a local Ethereum network that runs on your local machine and can be used for testing and development. Learn how to [customize your network configuration](https://docs.scaffoldeth.io/quick-start/environment#1-initialize-a-local-blockchain).
+```bash
+# Navigate to the project directory
+cd opensea-qc
 
-3. On a second terminal, deploy the test contract:
-
-```
-yarn deploy
-```
-
-This command deploys a test smart contract to the local network. You can find more information about how to customize your contract and deployment script in our [documentation](https://docs.scaffoldeth.io/quick-start/environment#2-deploy-your-smart-contract).
-
-4. On a third terminal, start your NextJS app:
-
-```
-yarn start
+# Start the blockchain network
+./scripts/start-blockchain-network.sh
 ```
 
-Visit your app on: `http://localhost:3000`. You can interact with your smart contract using the `Debug Contracts` page. You can tweak the app config in `packages/nextjs/scaffold.config.ts`.
+This script will:
+1. Clear any existing blockchain processes
+2. Start a local Hardhat blockchain network
+3. Deploy and build all required smart contracts:
+   - Seaport protocol
+   - ERC721 contracts
+   - ERC1155 contracts
+   - Operator Filter Registry
+   - Main project contracts
 
-**What's next**:
+The blockchain will be accessible at http://localhost:8545.
 
-Visit the [What's next section of our docs](https://docs.scaffoldeth.io/quick-start/environment#whats-next) to learn how to:
+### Starting the UI
 
-- Edit your smart contracts
-- Edit your deployment scripts
-- Customize your frontend
-- Edit the app config
-- Writing and running tests
-- [Setting up external services and API keys](https://docs.scaffoldeth.io/deploying/deploy-smart-contracts#configuration-of-third-party-services-for-production-grade-apps)
+Once the blockchain network is running, you can start the UI in a separate terminal:
 
-## Documentation
+```bash
+# Navigate to the project directory (if not already there)
+cd opensea-qc
+
+# Start the UI
+./scripts/start-ui.sh
+```
+
+This script will:
+1. Check if the blockchain network is accessible
+2. Start the NextJS frontend application
+
+The UI will be accessible at http://localhost:3000.
+
+### Full Start Sequence
+
+For a complete environment setup, follow these steps in order:
+
+1. Install dependencies (see Installing Dependencies section)
+2. Start Docker services: `./scripts/start-docker-services.sh`
+3. Start blockchain network: `./scripts/start-blockchain-network.sh`
+4. Start UI: `./scripts/start-ui.sh`
+
+### Restarting Components
+
+If you encounter issues with either component:
+
+- To restart the blockchain network: Press Ctrl+C in the terminal running `start-blockchain-network.sh` and run it again
+- To restart the UI: Press Ctrl+C in the terminal running `start-ui.sh` and run it again
+
+### Logs
+
+Both scripts save logs that can be useful for troubleshooting:
+- Blockchain logs: `/scripts/logs/blockchain.log`
+- Frontend logs: `/scripts/logs/frontend.log`
+
+## Original Scaffold-ETH 2 Documentation
 
 Visit our [docs](https://docs.scaffoldeth.io) to learn all the technical details and guides of Scaffold-ETH 2.
 

@@ -35,7 +35,7 @@ Use the `useScaffoldReadContract` (`packages/nextjs/hooks/scaffold-eth/useScaffo
 
 ```typescript
 const { data: someData } = useScaffoldReadContract({
-  contractName: "YourContract",
+  contractName: "OpenSeaQcNFT",
   functionName: "functionName",
   args: [arg1, arg2], // optional
 });
@@ -49,8 +49,8 @@ Use the `useScaffoldWriteContract` (`packages/nextjs/hooks/scaffold-eth/useScaff
  Example:
 
 ```typescript
-const { writeContractAsync: writeYourContractAsync } = useScaffoldWriteContract(
-  { contractName: "YourContract" }
+const { writeContractAsync: writeOpenSeaQcNFTAsync } = useScaffoldWriteContract(
+  { contractName: "OpenSeaQcNFT" }
 );
 
 // Usage (this will send a write transaction to the contract)

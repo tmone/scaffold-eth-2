@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import { useIsMounted } from "usehooks-ts";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { usePublicClient } from "wagmi";
 import { useSelectedNetwork } from "~~/hooks/scaffold-eth";
 import {
@@ -9,6 +8,20 @@ import {
   UseDeployedContractConfig,
   contracts,
 } from "~~/utils/scaffold-eth/contract";
+
+// Custom implementation of useIsMounted hook to avoid dependency on usehooks-ts
+const useIsMounted = () => {
+  const isMounted = useRef(false);
+  
+  useEffect(() => {
+    isMounted.current = true;
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
+  
+  return useCallback(() => isMounted.current, []);
+};
 
 type DeployedContractData<TContractName extends ContractName> = {
   data: Contract<TContractName> | undefined;
@@ -23,7 +36,7 @@ export function useDeployedContractInfo<TContractName extends ContractName>(
   config: UseDeployedContractConfig<TContractName>,
 ): DeployedContractData<TContractName>;
 /**
- * @deprecated Use object parameter version instead: useDeployedContractInfo({ contractName: "YourContract" })
+ * @deprecated Use object parameter version instead: useDeployedContractInfo({ contractName: "OpenSeaQcNFT" })
  */
 export function useDeployedContractInfo<TContractName extends ContractName>(
   contractName: TContractName,
