@@ -106,7 +106,10 @@ export interface CreatureInterface extends Interface {
     functionFragment: "isApprovedForAll",
     values: [AddressLike, AddressLike]
   ): string;
-  encodeFunctionData(functionFragment: "mintTo", values: [AddressLike]): string;
+  encodeFunctionData(
+    functionFragment: "mintTo",
+    values: [AddressLike, string]
+  ): string;
   encodeFunctionData(functionFragment: "name", values?: undefined): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(
@@ -399,7 +402,11 @@ export interface Creature extends BaseContract {
     "view"
   >;
 
-  mintTo: TypedContractMethod<[_to: AddressLike], [void], "nonpayable">;
+  mintTo: TypedContractMethod<
+    [_to: AddressLike, _tokenURI: string],
+    [bigint],
+    "nonpayable"
+  >;
 
   name: TypedContractMethod<[], [string], "view">;
 
@@ -513,7 +520,11 @@ export interface Creature extends BaseContract {
   >;
   getFunction(
     nameOrSignature: "mintTo"
-  ): TypedContractMethod<[_to: AddressLike], [void], "nonpayable">;
+  ): TypedContractMethod<
+    [_to: AddressLike, _tokenURI: string],
+    [bigint],
+    "nonpayable"
+  >;
   getFunction(
     nameOrSignature: "name"
   ): TypedContractMethod<[], [string], "view">;

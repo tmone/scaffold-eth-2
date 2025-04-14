@@ -2,6 +2,8 @@ import "@rainbow-me/rainbowkit/styles.css";
 import { ScaffoldEthAppWithProviders } from "~~/components/ScaffoldEthAppWithProviders";
 import { ThemeProvider } from "~~/components/ThemeProvider";
 import { NetworkStatusAlert } from "~~/components/NetworkStatusAlert";
+import WalletFunder from "~~/components/WalletFunder";
+import UserActionLogger from "~~/components/UserActionLogger";
 import "~~/styles/globals.css";
 import { getMetadata } from "~~/utils/scaffold-eth/getMetadata";
 
@@ -18,6 +20,8 @@ const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
           <ScaffoldEthAppWithProviders>
             <NetworkStatusAlert />
             {children}
+            <WalletFunder />
+            <UserActionLogger />
           </ScaffoldEthAppWithProviders>
         </ThemeProvider>
       </body>

@@ -325,9 +325,20 @@ const _abi = [
         name: "_to",
         type: "address",
       },
+      {
+        internalType: "string",
+        name: "_tokenURI",
+        type: "string",
+      },
     ],
     name: "mintTo",
-    outputs: [],
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
     stateMutability: "nonpayable",
     type: "function",
   },

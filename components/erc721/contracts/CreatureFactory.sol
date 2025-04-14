@@ -86,20 +86,20 @@ contract CreatureFactory is FactoryERC721, Ownable {
 
         Creature openSeaCreature = Creature(nftAddress);
         if (_optionId == SINGLE_CREATURE_OPTION) {
-            openSeaCreature.mintTo(_toAddress);
+            openSeaCreature.mintTo(_toAddress, "");
         } else if (_optionId == MULTIPLE_CREATURE_OPTION) {
             for (
                 uint256 i = 0;
                 i < NUM_CREATURES_IN_MULTIPLE_CREATURE_OPTION;
                 i++
             ) {
-                openSeaCreature.mintTo(_toAddress);
+                openSeaCreature.mintTo(_toAddress, "");
             }
         } else if (_optionId == LOOTBOX_OPTION) {
             CreatureLootBox openSeaCreatureLootBox = CreatureLootBox(
                 lootBoxNftAddress
             );
-            openSeaCreatureLootBox.mintTo(_toAddress);
+            openSeaCreatureLootBox.mintTo(_toAddress, "");
         }
     }
 

@@ -1,9 +1,9 @@
 {
-      "isRunning": false,
-      "networkType": "local",
-      "message": "Mạng blockchain local đã tắt. Các tính năng NFT sẽ không hoạt động.",
-      "severity": "error",
-      "timestamp": "1744520648",
-      "apiEndpoint": "http://localhost:3000/api",
-      "lastRefresh": "1744520648"
-    }
+    "isRunning": false,
+    "networkType": "local",
+    "message": "Local blockchain network is stopped. NFT features will not work.",
+    "severity": "error",
+    "timestamp": "1744586906",
+    "apiEndpoint": "http://localhost:3000/api",
+    "lastRefresh": "1744586906"
+  }

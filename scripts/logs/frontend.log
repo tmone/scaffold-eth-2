@@ -1,32 +1,172 @@
 
-Executing command: yarn start
+Executing command: NEXT_PUBLIC_LOG_USER_ACTIONS=true npm run dev
+
+> @se-2/nextjs@0.1.0 dev
+> next dev
+
+ ⚠ Found lockfile missing swc dependencies, patching...
+ ⨯ Failed to patch lockfile, please try uninstalling and reinstalling next in this workspace
+Error: Failed to get registry from "yarn".
+    at Array.map (<anonymous>) {
+  [cause]: Error: Command failed: yarn config get registry 
+      at Array.map (<anonymous>) {
+    status: 1,
+    signal: null,
+    output: [
+      null,
+      <Buffer 1b 5b 33 31 6d 1b 5b 31 6d 55 73 61 67 65 20 45 72 72 6f 72 1b 5b 32 32 6d 1b 5b 33 39 6d 3a 20 43 6f 75 6c 64 6e 27 74 20 66 69 6e 64 20 61 20 63 6f ... 98 more bytes>,
+      <Buffer >
+    ],
+    pid: 122562,
+    stdout: <Buffer 1b 5b 33 31 6d 1b 5b 31 6d 55 73 61 67 65 20 45 72 72 6f 72 1b 5b 32 32 6d 1b 5b 33 39 6d 3a 20 43 6f 75 6c 64 6e 27 74 20 66 69 6e 64 20 61 20 63 6f ... 98 more bytes>,
+    stderr: <Buffer >
+  }
+}
+ ⚠ Port 3000 is in use, using available port 3001 instead.
    ▲ Next.js 15.3.0
-   - Local:        http://localhost:3000
-   - Network:      http://10.255.255.254:3000
+   - Local:        http://localhost:3001
+   - Network:      http://10.255.255.254:3001
 
  ✓ Starting...
- ✓ Ready in 2.3s
+ ⚠ Found lockfile missing swc dependencies, patching...
+ ⨯ Failed to patch lockfile, please try uninstalling and reinstalling next in this workspace
+Error: Failed to get registry from "yarn".
+    at Array.map (<anonymous>) {
+  [cause]: Error: Command failed: yarn config get registry 
+      at Array.map (<anonymous>) {
+    status: 1,
+    signal: null,
+    output: [
+      null,
+      <Buffer 1b 5b 33 31 6d 1b 5b 31 6d 55 73 61 67 65 20 45 72 72 6f 72 1b 5b 32 32 6d 1b 5b 33 39 6d 3a 20 43 6f 75 6c 64 6e 27 74 20 66 69 6e 64 20 61 20 63 6f ... 98 more bytes>,
+      <Buffer >
+    ],
+    pid: 122899,
+    stdout: <Buffer 1b 5b 33 31 6d 1b 5b 31 6d 55 73 61 67 65 20 45 72 72 6f 72 1b 5b 32 32 6d 1b 5b 33 39 6d 3a 20 43 6f 75 6c 64 6e 27 74 20 66 69 6e 64 20 61 20 63 6f ... 98 more bytes>,
+    stderr: <Buffer >
+  }
+}
+ ✓ Ready in 11.1s
  ○ Compiling / ...
- ✓ Compiled / in 6.8s (7444 modules)
- GET / 200 in 8260ms
- HEAD / 200 in 40ms
- ✓ Compiled in 1481ms (7444 modules)
 
 🌼   daisyUI 4.12.10
 ├─ ✔︎ 2 themes added		https://daisyui.com/docs/themes
-╰─ ★ Star daisyUI on GitHub	https://github.com/saadeghi/daisyui
+╰─ ❤︎ Support daisyUI project:	https://opencollective.com/daisyui
 
- ✓ Compiled in 1898ms (3594 modules)
- GET / 200 in 2160ms
- ✓ Compiled in 2.4s (3594 modules)
- GET / 200 in 11ms
- ✓ Compiled in 1151ms (3594 modules)
- GET / 200 in 26ms
- ✓ Compiled in 2.9s (7458 modules)
- GET / 200 in 76ms
- ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
- GET / 200 in 493ms
- HEAD / 200 in 36ms
- ✓ Compiled in 1626ms (7458 modules)
- GET / 200 in 87ms
-[?25h
+ ⨯ ./components/UserActionLogger.tsx
+Error:   [31mx[0m You're importing a component that needs `useEffect`. This React hook only works in a client component. To fix, mark the file (or its parent) with the `"use client"` directive.
+  [31m|[0m
+  [31m|[0m  Learn more: https://nextjs.org/docs/app/api-reference/directives/use-client
+  [31m|[0m
+
+   ,-[[36;1;4m/home/tmone/opensea-qc/packages/nextjs/components/UserActionLogger.tsx[0m:1:1]
+ [2m1[0m | import { useEffect } from 'react';
+   : [35;1m         ^^^^^^^^^[0m
+ [2m2[0m | 
+ [2m3[0m | /**
+ [2m4[0m |  * A component that logs user interactions to make them visible in the console
+   `----
+
+Import trace for requested module:
+./components/UserActionLogger.tsx
+./app/layout.tsx
+ ⨯ ./components/UserActionLogger.tsx
+Error:   [31mx[0m You're importing a component that needs `useEffect`. This React hook only works in a client component. To fix, mark the file (or its parent) with the `"use client"` directive.
+  [31m|[0m
+  [31m|[0m  Learn more: https://nextjs.org/docs/app/api-reference/directives/use-client
+  [31m|[0m
+
+   ,-[[36;1;4m/home/tmone/opensea-qc/packages/nextjs/components/UserActionLogger.tsx[0m:1:1]
+ [2m1[0m | import { useEffect } from 'react';
+   : [35;1m         ^^^^^^^^^[0m
+ [2m2[0m | 
+ [2m3[0m | /**
+ [2m4[0m |  * A component that logs user interactions to make them visible in the console
+   `----
+
+Import trace for requested module:
+./components/UserActionLogger.tsx
+./app/layout.tsx
+ ⨯ ./components/UserActionLogger.tsx
+Error:   [31mx[0m You're importing a component that needs `useEffect`. This React hook only works in a client component. To fix, mark the file (or its parent) with the `"use client"` directive.
+  [31m|[0m
+  [31m|[0m  Learn more: https://nextjs.org/docs/app/api-reference/directives/use-client
+  [31m|[0m
+
+   ,-[[36;1;4m/home/tmone/opensea-qc/packages/nextjs/components/UserActionLogger.tsx[0m:1:1]
+ [2m1[0m | import { useEffect } from 'react';
+   : [35;1m         ^^^^^^^^^[0m
+ [2m2[0m | 
+ [2m3[0m | /**
+ [2m4[0m |  * A component that logs user interactions to make them visible in the console
+   `----
+
+Import trace for requested module:
+./components/UserActionLogger.tsx
+./app/layout.tsx
+ GET / 500 in 24740ms
+ ⨯ ./components/WalletFunder.tsx
+Error:   [31mx[0m You're importing a component that needs `useState`. This React hook only works in a client component. To fix, mark the file (or its parent) with the `"use client"` directive.
+  [31m|[0m
+  [31m|[0m  Learn more: https://nextjs.org/docs/app/api-reference/directives/use-client
+  [31m|[0m
+
+   ,-[[36;1;4m/home/tmone/opensea-qc/packages/nextjs/components/WalletFunder.tsx[0m:1:1]
+ [2m1[0m | import React, { useEffect, useState } from "react";
+   : [35;1m                           ^^^^^^^^[0m
+ [2m2[0m | import { useAccount, useBalance } from "wagmi";
+ [2m3[0m | import { parseEther } from "viem";
+   `----
+
+Import trace for requested module:
+./components/WalletFunder.tsx
+./app/layout.tsx
+ GET /_next/static/webpack/767e6cbd549b480f.webpack.hot-update.json 500 in 2912ms
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ⨯ ./components/WalletFunder.tsx
+Error:   [31mx[0m You're importing a component that needs `useState`. This React hook only works in a client component. To fix, mark the file (or its parent) with the `"use client"` directive.
+  [31m|[0m
+  [31m|[0m  Learn more: https://nextjs.org/docs/app/api-reference/directives/use-client
+  [31m|[0m
+
+   ,-[[36;1;4m/home/tmone/opensea-qc/packages/nextjs/components/WalletFunder.tsx[0m:1:1]
+ [2m1[0m | import React, { useEffect, useState } from "react";
+   : [35;1m                           ^^^^^^^^[0m
+ [2m2[0m | import { useAccount, useBalance } from "wagmi";
+ [2m3[0m | import { parseEther } from "viem";
+   `----
+
+Import trace for requested module:
+./components/WalletFunder.tsx
+./app/layout.tsx
+ GET / 500 in 618ms
+ ⨯ ./components/WalletFunder.tsx
+Error:   [31mx[0m You're importing a component that needs `useState`. This React hook only works in a client component. To fix, mark the file (or its parent) with the `"use client"` directive.
+  [31m|[0m
+  [31m|[0m  Learn more: https://nextjs.org/docs/app/api-reference/directives/use-client
+  [31m|[0m
+
+   ,-[[36;1;4m/home/tmone/opensea-qc/packages/nextjs/components/WalletFunder.tsx[0m:1:1]
+ [2m1[0m | import React, { useEffect, useState } from "react";
+   : [35;1m                           ^^^^^^^^[0m
+ [2m2[0m | import { useAccount, useBalance } from "wagmi";
+ [2m3[0m | import { parseEther } from "viem";
+   `----
+
+Import trace for requested module:
+./components/WalletFunder.tsx
+./app/layout.tsx
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename '/home/tmone/opensea-qc/packages/nextjs/.next/cache/webpack/client-development/3.pack.gz_' -> '/home/tmone/opensea-qc/packages/nextjs/.next/cache/webpack/client-development/3.pack.gz'
+ ✓ Compiled in 1834ms (7492 modules)
+ ✓ Compiled /_not-found in 2.7s (7703 modules)
+ ○ Compiling / ...
+ ✓ Compiled / in 677ms (3970 modules)
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ GET / 200 in 1723ms
+ GET /_next/static/webpack/767e6cbd549b480f.webpack.hot-update.json 404 in 4432ms
+ GET / 200 in 52ms
+ HEAD / 200 in 34ms
+ ✓ Compiled in 921ms (7492 modules)
+ ✓ Compiled in 1054ms (7828 modules)
+ GET / 200 in 139ms
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename '/home/tmone/opensea-qc/packages/nextjs/.next/cache/webpack/client-development/0.pack.gz_' -> '/home/tmone/opensea-qc/packages/nextjs/.next/cache/webpack/client-development/0.pack.gz'

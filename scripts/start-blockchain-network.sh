@@ -16,17 +16,8 @@ SCRIPT_DIR="$BASE_DIR/scripts"
 LOGS_DIR="$SCRIPT_DIR/logs"
 NETWORK_CONFIG_PATH="$BASE_DIR/packages/nextjs/public/network-status.json"
 BLOCKCHAIN_LOG="${LOGS_DIR}/blockchain.log"
-MAX_RETRIES=10
+MAX_RETRIES=15  # Increased retries
 RPC_URL="http://localhost:8545"
-
-# Array to store PIDs of background processes
-declare -a PIDS=()
-
-# Flag to track if network status has been updated
-NETWORK_STATUS_UPDATED=0
-
-# Track the last seen transaction count for event detection
-LAST_TX_COUNT=0
 
 # Create logs directory if it doesn't exist
 mkdir -p "$LOGS_DIR"
@@ -47,40 +38,31 @@ update_network_status() {
   local message=$2
   local severity=$3
   
-  # Only update if the status has changed or it's the first update
-  if [ "$NETWORK_STATUS_UPDATED" -eq 0 ] || [ "$PREV_STATUS" != "$status" ]; then
-    local timestamp=$(date +%s)
-    echo '{
-      "isRunning": '$status',
-      "networkType": "local",
-      "message": "'$message'",
-      "severity": "'$severity'",
-      "timestamp": "'$timestamp'",
-      "apiEndpoint": "http://localhost:3000/api",
-      "lastRefresh": "'$timestamp'"
-    }' > "$NETWORK_CONFIG_PATH"
-    
-    NETWORK_STATUS_UPDATED=1
-    PREV_STATUS=$status
-  fi
+  local timestamp=$(date +%s)
+  echo '{
+    "isRunning": '$status',
+    "networkType": "local",
+    "message": "'$message'",
+    "severity": "'$severity'",
+    "timestamp": "'$timestamp'",
+    "apiEndpoint": "http://localhost:3000/api",
+    "lastRefresh": "'$timestamp'"
+  }' > "$NETWORK_CONFIG_PATH"
 }
 
 # Function to handle script exit and cleanup
 cleanup() {
   echo -e "\n${YELLOW}Shutting down blockchain services...${NC}"
   
-  # Kill all background processes
-  for pid in "${PIDS[@]}"; do
-    if ps -p $pid > /dev/null; then
-      echo -e "Stopping process ${YELLOW}$pid${NC}..."
-      kill $pid 2>/dev/null
-      # Also kill any child processes
-      pkill -P $pid 2>/dev/null
-    fi
-  done
+  # Kill any process using port 8545
+  local port_pid=$(lsof -t -i:8545 2>/dev/null)
+  if [ ! -z "$port_pid" ]; then
+    echo -e "Killing process using port 8545 (PID: $port_pid)..."
+    kill -9 $port_pid 2>/dev/null
+  fi
   
   # Update network status to indicate shutdown
-  update_network_status false "Mạng blockchain local đã tắt. Các tính năng NFT sẽ không hoạt động." "error"
+  update_network_status false "Local blockchain network is stopped. NFT features will not work." "error"
   
   echo -e "${GREEN}✓ Blockchain services stopped${NC}"
   exit 0
@@ -89,28 +71,10 @@ cleanup() {
 # Register the cleanup function to be called on exit
 trap cleanup SIGINT SIGTERM EXIT
 
-# Function to print section headers
-print_header() {
-  echo -e "\n${BLUE}==== $1 ====${NC}\n"
-}
-
-# Function to check if a command succeeded
-check_status() {
-  if [ $? -eq 0 ]; then
-    echo -e "${GREEN}✓ $1 succeeded${NC}"
-  else
-    echo -e "${RED}✗ $1 failed${NC}"
-    if [ "$2" = "exit" ]; then
-      exit 1
-    fi
-  fi
-}
-
 # Function to check if blockchain is already running
 check_blockchain() {
     if lsof -i:8545 >/dev/null 2>&1; then
         echo "Port 8545 is already in use. Another blockchain instance might be running."
-        echo "Use 'lsof -i:8545' to identify the process and 'kill <PID>' to stop it."
         return 0
     else
         return 1
@@ -121,13 +85,11 @@ check_blockchain() {
 verify_blockchain() {
     echo "Verifying blockchain connection..."
     local retry_count=0
-    local connected=false
 
-    while [ $retry_count -lt $MAX_RETRIES ] && [ $connected = false ]; do
+    while [ $retry_count -lt $MAX_RETRIES ]; do
         if curl -s -X POST -H "Content-Type: application/json" \
             --data '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}' \
             $RPC_URL | grep -q "result"; then
-            connected=true
             echo "Blockchain connection verified successfully."
             return 0
         else
@@ -162,26 +124,65 @@ fi
 echo "Starting Hardhat blockchain network..."
 echo "$(date): Starting blockchain network" >> "$BLOCKCHAIN_LOG"
 
-# Run Hardhat directly with its embedded node script instead of using npx
-cd "$BASE_DIR/packages/hardhat" && \
-  node ./node_modules/hardhat/internal/cli/cli.js node --network hardhat >> "$BLOCKCHAIN_LOG" 2>&1 &
+# Go to Hardhat package directory
+cd "$BASE_DIR/packages/hardhat"
+
+# Install hardhat globally if needed
+if ! command -v npx &> /dev/null; then
+    echo "npx command not found. Installing npx..."
+    npm install -g npx
+fi
+
+# Make sure hardhat is installed
+#echo "Installing hardhat locally and globally..."
+#yarn add hardhat --dev 
+#yarn global add hardhat
+npm run compile
+
+# Start hardhat node directly using npx
+echo "Starting hardhat node with npx..."
+npm run chain >> "$BLOCKCHAIN_LOG" 2>&1 &
 
 BLOCKCHAIN_PID=$!
-
-# Save PID for later
 echo $BLOCKCHAIN_PID > "${LOGS_DIR}/blockchain.pid"
 echo "Blockchain process started with PID: $BLOCKCHAIN_PID"
-echo "Giving blockchain time to initialize (5 seconds)..."
-sleep 5
+echo "Giving blockchain time to initialize (10 seconds)..."
+sleep 10
 
 # Verify blockchain is running
 if ! verify_blockchain; then
-    echo "ERROR: Blockchain verification failed. Check logs at: $BLOCKCHAIN_LOG"
-    echo "You can manually check the connection with:"
-    echo "curl -X POST -H \"Content-Type: application/json\" --data '{\"jsonrpc\":\"2.0\",\"method\":\"eth_blockNumber\",\"params\":[],\"id\":1}' http://localhost:8545"
-    echo "Process might still be starting up. Wait a bit longer and try again."
-    exit 1
+    echo "First attempt failed. Trying alternative method..."
+    kill $BLOCKCHAIN_PID 2>/dev/null
+    sleep 2
+    
+    # Try alternative approach with direct node command
+    echo "Installing hardhat CLI globally..."
+    npm install -g hardhat
+    
+    # Start hardhat with global installation
+    echo "Starting hardhat node with global installation..."
+    npm run chain >> "$BLOCKCHAIN_LOG" 2>&1 &
+    
+    BLOCKCHAIN_PID=$!
+    echo $BLOCKCHAIN_PID > "${LOGS_DIR}/blockchain.pid"
+    echo "Blockchain process started with PID: $BLOCKCHAIN_PID"
+    echo "Giving blockchain time to initialize (10 seconds)..."
+    sleep 10
+    
+    # Verify blockchain is running again
+    if ! verify_blockchain; then
+        echo "ERROR: Blockchain verification failed. Check logs at: $BLOCKCHAIN_LOG"
+        echo "Last 20 lines of logs:"
+        tail -n 20 "$BLOCKCHAIN_LOG"
+        echo
+        echo "You can manually check the connection with:"
+        echo "curl -X POST -H \"Content-Type: application/json\" --data '{\"jsonrpc\":\"2.0\",\"method\":\"eth_blockNumber\",\"params\":[],\"id\":1}' http://localhost:8545"
+        exit 1
+    fi
 fi
+
+# If we get here, the blockchain is running successfully
+update_network_status true "Using local Hardhat blockchain network" "info"
 
 echo 
 echo "====================================="
@@ -194,17 +195,35 @@ echo
 echo "To stop the blockchain network, run:"
 echo "kill $BLOCKCHAIN_PID"
 echo
-echo "Debug the connection at: http://localhost:3000/debug/blockchain"
 echo "====================================="
 
-# Reduced frequency health check loop
+# Keep the script running and perform health checks
 while true; do
-  # Check blockchain health every 5 minutes instead of constantly
-  sleep 300
+  sleep 30
   
-  # Only update status if something changed (handled by update_network_status function)
-  verify_blockchain > /dev/null
-  
-  # Refresh token data if new transactions are detected
-  refresh_token_data
+  # Verify blockchain is still running
+  if ! curl -s -X POST -H "Content-Type: application/json" \
+       --data '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}' \
+       $RPC_URL | grep -q "result"; then
+       
+    echo "$(date): Blockchain connection lost, attempting restart..." >> "$BLOCKCHAIN_LOG"
+    update_network_status false "Blockchain connection lost. Attempting to restart..." "warning"
+    
+    # Try to restart blockchain
+    cd "$BASE_DIR/packages/hardhat"
+    npm run chain >> "$BLOCKCHAIN_LOG" 2>&1 &
+    
+    BLOCKCHAIN_PID=$!
+    echo $BLOCKCHAIN_PID > "${LOGS_DIR}/blockchain.pid"
+    
+    sleep 10
+    if ! verify_blockchain; then
+      update_network_status false "Failed to restart blockchain network. NFT features will not work." "error"
+      echo "$(date): Failed to restart blockchain network" >> "$BLOCKCHAIN_LOG"
+      exit 1
+    else
+      update_network_status true "Blockchain network restarted successfully" "success"
+      echo "$(date): Blockchain network restarted successfully" >> "$BLOCKCHAIN_LOG"
+    fi
+  fi
 done

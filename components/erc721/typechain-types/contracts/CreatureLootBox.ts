@@ -107,7 +107,10 @@ export interface CreatureLootBoxInterface extends Interface {
     functionFragment: "itemsPerLootbox",
     values?: undefined
   ): string;
-  encodeFunctionData(functionFragment: "mintTo", values: [AddressLike]): string;
+  encodeFunctionData(
+    functionFragment: "mintTo",
+    values: [AddressLike, string]
+  ): string;
   encodeFunctionData(functionFragment: "name", values?: undefined): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(
@@ -405,7 +408,11 @@ export interface CreatureLootBox extends BaseContract {
 
   itemsPerLootbox: TypedContractMethod<[], [bigint], "view">;
 
-  mintTo: TypedContractMethod<[_to: AddressLike], [void], "nonpayable">;
+  mintTo: TypedContractMethod<
+    [_to: AddressLike, _tokenURI: string],
+    [bigint],
+    "nonpayable"
+  >;
 
   name: TypedContractMethod<[], [string], "view">;
 
@@ -521,7 +528,11 @@ export interface CreatureLootBox extends BaseContract {
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
     nameOrSignature: "mintTo"
-  ): TypedContractMethod<[_to: AddressLike], [void], "nonpayable">;
+  ): TypedContractMethod<
+    [_to: AddressLike, _tokenURI: string],
+    [bigint],
+    "nonpayable"
+  >;
   getFunction(
     nameOrSignature: "name"
   ): TypedContractMethod<[], [string], "view">;
