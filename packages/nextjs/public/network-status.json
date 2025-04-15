@@ -1,9 +1,11 @@
 {
-    "isRunning": false,
-    "networkType": "local",
-    "message": "Local blockchain network is stopped. NFT features will not work.",
-    "severity": "error",
-    "timestamp": "1744586906",
-    "apiEndpoint": "http://localhost:3000/api",
-    "lastRefresh": "1744586906"
-  }
+        "isRunning": true,
+        "networkType": "local",
+        "message": "Using local Hardhat blockchain network",
+        "severity": "info",
+        "timestamp": "1744753847",
+        "apiEndpoint": "http://localhost:3000/api",
+        "lastRefresh": "1744753847",
+        "timeoutMs": 30000,
+        "retries": 5
+      }

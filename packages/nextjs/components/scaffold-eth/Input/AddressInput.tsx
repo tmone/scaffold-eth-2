@@ -5,6 +5,10 @@ import { Address, isAddress } from "viem";
 import { normalize } from "viem/ens";
 import { useEnsAddress, useEnsAvatar, useEnsName } from "wagmi";
 import { CommonInputProps, InputBase, isENS } from "~~/components/scaffold-eth";
+import { config } from "~~/utils/config";
+
+// Check if ENS resolution should be disabled (for local networks)
+const isEnsDisabled = config.ensResolution.disabled;
 
 /**
  * Address input with ENS name resolution
@@ -29,7 +33,7 @@ export const AddressInput = ({ value, name, placeholder, onChange, disabled }: C
     chainId: 1,
     query: {
       gcTime: 30_000,
-      enabled: isDebouncedValueLive && isENS(debouncedValue),
+      enabled: !isEnsDisabled && isDebouncedValueLive && isENS(debouncedValue),
     },
   });
 
@@ -43,7 +47,7 @@ export const AddressInput = ({ value, name, placeholder, onChange, disabled }: C
     address: settledValue as Address,
     chainId: 1,
     query: {
-      enabled: isAddress(debouncedValue),
+      enabled: !isEnsDisabled && isAddress(debouncedValue),
       gcTime: 30_000,
     },
   });
@@ -52,7 +56,7 @@ export const AddressInput = ({ value, name, placeholder, onChange, disabled }: C
     name: ensName ? normalize(ensName) : undefined,
     chainId: 1,
     query: {
-      enabled: Boolean(ensName),
+      enabled: !isEnsDisabled && Boolean(ensName),
       gcTime: 30_000,
     },
   });

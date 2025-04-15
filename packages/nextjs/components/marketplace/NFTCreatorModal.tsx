@@ -6,6 +6,9 @@ import { ethers } from "ethers";
 import { useAccount } from "wagmi";
 import { ArrowUpTrayIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useSeaport } from "~~/hooks/useSeaport";
+import { getContractAddress } from "~~/services/contract-service";
+import { generateMockIpfsCid, ipfsUriToGatewayUrl } from "~~/utils/ipfs-helpers";
+import axios from 'axios';
 
 interface NetworkStatus {
   isRunning: boolean;
@@ -34,7 +37,23 @@ const NFTCreatorModal = ({ isOpen, onClose }: NFTCreatorModalProps) => {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [networkStatus, setNetworkStatus] = useState<NetworkStatus | null>(null);
+  const [contractAddress, setContractAddress] = useState<string>("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Fetch the contract address when component mounts
+  useEffect(() => {
+    async function loadContractAddress() {
+      try {
+        const address = await getContractAddress("Creature", "local");
+        console.log("Loaded contract address:", address);
+        setContractAddress(address);
+      } catch (error) {
+        console.error("Failed to load contract address:", error);
+      }
+    }
+    
+    loadContractAddress();
+  }, []);
 
   // Kiểm tra trạng thái mạng blockchain khi component được tải
   useEffect(() => {
@@ -67,14 +86,16 @@ const NFTCreatorModal = ({ isOpen, onClose }: NFTCreatorModalProps) => {
     }
   };
 
-  // Import needed Creature ABI from contracts
-  const CREATURE_CONTRACT_ADDRESS = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512"; // Local Hardhat deployment address
   const CREATURE_ABI = [
     "function mintTo(address _to, string memory _tokenURI) public returns (uint256)",
     "function tokenURI(uint256 _tokenId) public view returns (string memory)",
     "function balanceOf(address _owner) external view returns (uint256)",
     "function tokenOfOwnerByIndex(address _owner, uint256 _index) external view returns (uint256)",
-    "function totalSupply() external view returns (uint256)"
+    "function totalSupply() external view returns (uint256)",
+    "function owner() public view returns (address)",
+    "function name() public view returns (string memory)",
+    "function symbol() public view returns (string memory)",
+    "event Transfer(address indexed from, address indexed to, uint256 indexed tokenId)"
   ];
 
   // Handle file selection
@@ -134,23 +155,39 @@ const NFTCreatorModal = ({ isOpen, onClose }: NFTCreatorModalProps) => {
         throw new Error("Không thể kết nối với mạng blockchain local. Đảm bảo rằng Hardhat node đang chạy và thử lại.");
       }
       
-      // Step 2: Upload image to IPFS or similar service (simulated)
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate upload delay
-      const mockIpfsHash = `ipfs_${Date.now()}_${file.name.replace(/\s/g, '')}`;
-      const imageUrl = `ipfs://${mockIpfsHash}`;
+      // Step 2: Upload image sử dụng API lưu trữ nội bộ
+      const imageFormData = new FormData();
+      imageFormData.append('file', file);
       
-      // Step 3: Create metadata and upload to IPFS (simulated)
-      await new Promise(resolve => setTimeout(resolve, 500)); // Simulate upload delay
+      const imageUploadResponse = await axios.post('/api/upload', imageFormData);
+      console.log("Image upload response:", imageUploadResponse.data);
+      
+      if (!imageUploadResponse.data.success) {
+        throw new Error("Không thể tải lên hình ảnh. Vui lòng thử lại sau.");
+      }
+      
+      // Lấy URI và URL của hình ảnh đã upload
+      const imageUri = imageUploadResponse.data.url;
+      const imagePublicUrl = imageUploadResponse.data.type === 'ipfs' 
+        ? imageUploadResponse.data.gatewayUrl 
+        : imageUploadResponse.data.publicUrl;
+      
+      // Step 3: Create và upload metadata
       const metadata = {
         name,
         description,
-        image: imageUrl,
+        image: imageUri,
         attributes: []
       };
       
-      // Simulate metadata upload
-      const metadataIpfsHash = `ipfs_metadata_${Date.now()}`;
-      const tokenURI = `ipfs://${metadataIpfsHash}`;
+      const metadataResponse = await axios.post('/api/metadata', metadata);
+      console.log("Metadata upload response:", metadataResponse.data);
+      
+      if (!metadataResponse.data.success) {
+        throw new Error("Không thể tải lên metadata. Vui lòng thử lại sau.");
+      }
+      
+      const tokenURI = metadataResponse.data.url;
       
       setIsUploading(false);
       setIsMinting(true);
@@ -166,26 +203,49 @@ const NFTCreatorModal = ({ isOpen, onClose }: NFTCreatorModalProps) => {
           throw new Error("Không tìm thấy tài khoản trong mạng blockchain local. Vui lòng đảm bảo Hardhat node đang chạy đúng cách.");
         }
         
-        // Get the first account and use provider's signer instead of creating a wallet
-        const localAccount = accounts[0];
-        // Use the provider's signer directly instead of creating a wallet
-        const signer = provider.getSigner(localAccount);
-        
-        // Use a placeholder address if no wallet is connected
-        const userAddress = address || localAccount;
-        
-        // Create contract instance with signer
+        // Create contract instance with provider first
         const creatureContract = new ethers.Contract(
-          CREATURE_CONTRACT_ADDRESS,
-          CREATURE_ABI,
-          signer
+          contractAddress, // Use the state variable instead of the constant
+          [
+            ...CREATURE_ABI,
+            "function owner() public view returns (address)" // Add owner function to ABI
+          ],
+          provider
         );
         
-        console.log("Using address for NFT creation:", userAddress);
+        // Get the contract owner
+        let contractOwner;
+        try {
+          contractOwner = await creatureContract.owner();
+          console.log("Contract owner:", contractOwner);
+        } catch (ownerError) {
+          console.error("Error getting contract owner:", ownerError);
+          // Fall back to using the first account if we can't get the owner
+          contractOwner = accounts[0];
+          console.log("Falling back to first account as owner:", contractOwner);
+        }
         
-        // THỰC HIỆN MINT NFT THỰC TẾ (không mock nữa)
+        // Use the owner's signer
+        const ownerSigner = provider.getSigner(contractOwner);
+        const creatureContractWithSigner = creatureContract.connect(ownerSigner);
+        
+        // Use a placeholder address if no wallet is connected
+        const userAddress = address || accounts[0];
+        
+        console.log("Using address for NFT creation:", userAddress);
+        console.log("Using contract owner for minting:", contractOwner);
+        
+        // THỰC HIỆN MINT NFT THỰC TẾ với manual gas limit để bypass lỗi gas estimation
         console.log("Đang mint NFT với tokenURI:", tokenURI);
-        const mintTx = await creatureContract.mintTo(userAddress, tokenURI);
+        
+        // Cấu hình transaction với manual gas limit
+        const txOptions = {
+          gasLimit: 500000, // Set manual gas limit to bypass estimation
+          gasPrice: ethers.utils.parseUnits("50", "gwei") // Set appropriate gas price
+        };
+        
+        // Gọi hàm mintTo với gas limit cụ thể
+        const mintTx = await creatureContractWithSigner.mintTo(userAddress, tokenURI, txOptions);
         console.log("Transaction hash:", mintTx.hash);
         
         // Hiển thị thông báo đang chờ xử lý giao dịch
@@ -211,14 +271,14 @@ const NFTCreatorModal = ({ isOpen, onClose }: NFTCreatorModalProps) => {
             // Thực hiện đăng bán NFT thực tế
             const priceInEth = parseFloat(price);
             
-            // Construct actual listing data
+            // Construct actual listing data sử dụng URL hình ảnh đã upload
             const actualListingData = {
               name,
               description,
-              imageUrl: `https://ipfs.example.com/${mockIpfsHash}`, // Để UI có thể hiển thị ảnh
+              imageUrl: imagePublicUrl, // Sử dụng URL hình ảnh có thể truy cập được
               price: priceInEth,
               tokenId: tokenId.toString(),
-              tokenAddress: CREATURE_CONTRACT_ADDRESS,
+              tokenAddress: contractAddress, // Use the state variable instead of the constant
               tokenType: "ERC721",
               amount: 1
             };
@@ -249,7 +309,25 @@ const NFTCreatorModal = ({ isOpen, onClose }: NFTCreatorModalProps) => {
         
       } catch (error: any) {
         console.error("Error with local provider:", error);
-        throw new Error(`Lỗi khi tạo NFT trên mạng local: ${error.message}`);
+        
+        // Improved error handling to extract more info from the transaction error
+        let errorMessage = "Lỗi khi tạo NFT trên mạng local";
+        
+        // Parse error details
+        if (error.error && error.error.message) {
+          errorMessage += `: ${error.error.message}`;
+        } else if (error.reason) {
+          errorMessage += `: ${error.reason}`;
+        } else if (error.message) {
+          errorMessage += `: ${error.message}`;
+        }
+        
+        // Add debugging advice
+        if (errorMessage.includes("gas")) {
+          errorMessage += ". Đã thử với gas limit tùy chỉnh, nhưng vẫn thất bại. Có thể contract không được triển khai đúng cách.";
+        }
+        
+        throw new Error(errorMessage);
       }
     } catch (err: any) {
       setIsUploading(false);

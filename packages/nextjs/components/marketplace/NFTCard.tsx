@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAccount } from "wagmi";
 import { useSeaport } from "~~/hooks/useSeaport";
+import { getDisplayImageUrl } from "~~/utils/ipfs-helpers";
 
 interface NFTCardProps {
   id: string;
@@ -26,15 +27,8 @@ export const NFTCard = ({
   const { address } = useAccount();
   const { fulfillListing } = useSeaport();
   const [isLoading, setIsLoading] = useState(false);
+  const [imageError, setImageError] = useState(false);
   
-  // Convert IPFS URLs to gateway URLs if needed
-  const getImageUrl = (url: string) => {
-    if (url.startsWith("ipfs://")) {
-      return url.replace("ipfs://", "https://ipfs.io/ipfs/");
-    }
-    return url;
-  };
-
   // Handle purchase of NFT
   const handlePurchase = async () => {
     if (!address) {
@@ -54,18 +48,23 @@ export const NFTCard = ({
     }
   };
   
+  // Xử lý lỗi hình ảnh và sử dụng ảnh dự phòng
+  const handleImageError = () => {
+    setImageError(true);
+  };
+
+  // Lấy URL hình ảnh phù hợp cho hiển thị
+  const imageUrl = imageError ? "/fallback-nft.png" : image;
+  
   return (
     <div className="card bg-base-100 shadow-xl overflow-hidden hover:shadow-2xl transition-shadow duration-300">
       {/* Card Image */}
       <figure className="relative h-64 w-full overflow-hidden">
         <img 
-          src={getImageUrl(image)} 
+          src={imageUrl} 
           alt={name}
           className="w-full h-full object-cover"
-          onError={(e) => {
-            // Fallback image if the NFT image fails to load
-            (e.target as HTMLImageElement).src = "/fallback-nft.png";
-          }}
+          onError={handleImageError}
         />
       </figure>
       

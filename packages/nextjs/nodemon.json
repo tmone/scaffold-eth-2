@@ -1,0 +1,17 @@
+{
+  "watch": [
+    "../hardhat/artifacts",
+    "../hardhat/contracts",
+    "contracts",
+    "public",
+    "utils/scaffold-eth",
+    "../hardhat/deployments"
+  ],
+  "ext": "json,js,ts,tsx,sol,svg,png,jpg,jpeg,gif",
+  "ignore": [
+    "node_modules",
+    ".next"
+  ],
+  "delay": 300,
+  "exec": "touch ./app/page.tsx"
+}

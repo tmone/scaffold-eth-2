@@ -103,6 +103,123 @@ verify_blockchain() {
     return 1
 }
 
+# Function to deploy NFT contracts
+deploy_nft_contracts() {
+  echo "====================================="
+  echo "Deploying NFT Contracts"
+  echo "====================================="
+  
+  # Create addresses.json file if it doesn't exist
+  local addresses_file="$BASE_DIR/packages/nextjs/contracts/addresses.json"
+  if [ ! -f "$addresses_file" ]; then
+    echo -e "${YELLOW}Creating contract addresses database file...${NC}"
+    mkdir -p "$(dirname $addresses_file)"
+    echo '{
+  "local": {},
+  "testnet": {},
+  "mainnet": {}
+}' > "$addresses_file"
+  fi
+  
+  echo -e "${YELLOW}Deploying ERC721 contracts...${NC}"
+  
+  # Deploy ERC721 contracts
+  cd "$BASE_DIR/components/erc721"
+  echo "Installing contract dependencies..."
+  npm install >> "$LOGS_DIR/erc721_deploy.log" 2>&1
+  if [ $? -ne 0 ]; then
+    echo -e "${RED}✗ Failed to install ERC721 dependencies. Check $LOGS_DIR/erc721_deploy.log${NC}"
+    echo -e "${YELLOW}NFT creation functionality might not work properly.${NC}"
+  else
+    echo "Compiling and deploying ERC721 contracts..."
+    npx hardhat run scripts/deploy.js --network localhost > "$LOGS_DIR/erc721_deploy_latest.log" 2>&1
+    if [ $? -ne 0 ]; then
+      echo -e "${RED}✗ Failed to deploy ERC721 contracts. Check $LOGS_DIR/erc721_deploy_latest.log${NC}"
+      echo -e "${YELLOW}Last 10 lines of log:${NC}"
+      tail -n 10 "$LOGS_DIR/erc721_deploy_latest.log"
+    else
+      echo -e "${GREEN}✓ ERC721 contracts deployed successfully${NC}"
+      
+      # Extract addresses from deployment log
+      echo -e "${YELLOW}Extracting and saving contract addresses...${NC}"
+      local creature_address=$(grep -m 1 "Creature.*deployed to:" "$LOGS_DIR/erc721_deploy_latest.log" | awk '{print $NF}')
+      
+      if [ ! -z "$creature_address" ]; then
+        echo -e "${GREEN}Found Creature contract address: $creature_address${NC}"
+        # Update addresses.json with jq if available
+        if command -v jq &> /dev/null; then
+          jq ".local.Creature = \"$creature_address\"" "$addresses_file" > "$addresses_file.tmp" && mv "$addresses_file.tmp" "$addresses_file"
+        else
+          # Fallback method if jq is not available
+          local temp_py_script=$(mktemp)
+          cat > "$temp_py_script" << EOF
+import json
+import sys
+
+try:
+    with open("$addresses_file", "r") as f:
+        data = json.load(f)
+    
+    if "local" not in data:
+        data["local"] = {}
+    
+    data["local"]["Creature"] = "$creature_address"
+    
+    with open("$addresses_file", "w") as f:
+        json.dump(data, f, indent=2)
+    
+    print("Address updated successfully")
+except Exception as e:
+    print(f"Error updating address: {e}")
+    sys.exit(1)
+EOF
+          python3 "$temp_py_script"
+          rm "$temp_py_script"
+        fi
+        echo -e "${GREEN}✓ Updated Creature address in database file${NC}"
+      else
+        echo -e "${RED}✗ Could not find Creature contract address in deployment log${NC}"
+        echo -e "${YELLOW}Deployment log content (last 5 lines):${NC}"
+        tail -n 5 "$LOGS_DIR/erc721_deploy_latest.log"
+      fi
+      
+      # Append to historical log
+      cat "$LOGS_DIR/erc721_deploy_latest.log" >> "$LOGS_DIR/erc721_deploy.log"
+    fi
+  fi
+  
+  # Deploy ERC1155 contracts
+  echo -e "${YELLOW}Deploying ERC1155 contracts...${NC}"
+  cd "$BASE_DIR/components/erc1155"
+  echo "Installing contract dependencies..."
+  npm install >> "$LOGS_DIR/erc1155_deploy.log" 2>&1
+  if [ $? -ne 0 ]; then
+    echo -e "${RED}✗ Failed to install ERC1155 dependencies. Check $LOGS_DIR/erc1155_deploy.log${NC}"
+    echo -e "${YELLOW}NFT creation functionality might not work properly.${NC}"
+  else
+    echo "Compiling and deploying ERC1155 contracts..."
+    npx hardhat run scripts/deploy.js --network localhost > "$LOGS_DIR/erc1155_deploy_latest.log" 2>&1
+    if [ $? -ne 0 ]; then
+      echo -e "${RED}✗ Failed to deploy ERC1155 contracts. Check $LOGS_DIR/erc1155_deploy_latest.log${NC}"
+      echo -e "${YELLOW}Last 10 lines of log:${NC}"
+      tail -n 10 "$LOGS_DIR/erc1155_deploy_latest.log"
+    else
+      echo -e "${GREEN}✓ ERC1155 contracts deployed successfully${NC}"
+      
+      # Extract ERC1155 addresses if needed (similar to ERC721)
+      
+      # Append to historical log
+      cat "$LOGS_DIR/erc1155_deploy_latest.log" >> "$LOGS_DIR/erc1155_deploy.log"
+    fi
+  fi
+  
+  echo -e "${GREEN}Contract addresses have been saved to the database file: $addresses_file${NC}"
+  echo -e "${YELLOW}Your frontend will use these addresses automatically.${NC}"
+  
+  # Return to base directory
+  cd "$BASE_DIR"
+}
+
 # Check for existing blockchain process
 if check_blockchain; then
     echo "Do you want to kill the existing process and start a fresh blockchain? (y/n)"
@@ -183,6 +300,9 @@ fi
 
 # If we get here, the blockchain is running successfully
 update_network_status true "Using local Hardhat blockchain network" "info"
+
+# Deploy NFT contracts
+deploy_nft_contracts
 
 echo 
 echo "====================================="

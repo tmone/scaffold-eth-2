@@ -42,16 +42,41 @@ services:
       - elasticsearch_data:/usr/share/elasticsearch/data
     restart: unless-stopped
 
-  # IPFS node for metadata storage
+  # IPFS node for metadata and image storage - cập nhật cấu hình
   ipfs:
     image: ipfs/kubo:latest
     container_name: opensea-ipfs
     ports:
-      - "4001:4001"
-      - "5001:5001"
-      - "8080:8080"
+      - "4001:4001"  # Swarm port
+      - "5001:5001"  # API port
+      - "8080:8080"  # Gateway port
     volumes:
       - ipfs_data:/data/ipfs
+    environment:
+      - IPFS_PROFILE=server   # Cấu hình cho server
+      - IPFS_SWARM_ADDR_FILTER=/ip4/172.16.0.0/16   # IPFS sẽ không cố gắng kết nối ra mạng ngoài
+    command: >
+      sh -c "
+        ipfs config --json API.HTTPHeaders.Access-Control-Allow-Origin '[\"*\"]' &&
+        ipfs config --json API.HTTPHeaders.Access-Control-Allow-Methods '[\"PUT\", \"POST\", \"GET\"]' &&
+        ipfs daemon --migrate --enable-gc"
+    restart: unless-stopped
+
+  # API image server - dịch vụ mới để lưu trữ và phục vụ hình ảnh NFT
+  image-server:
+    image: node:18-alpine
+    container_name: opensea-image-server
+    working_dir: /app
+    volumes:
+      - ../packages/nextjs/public:/app/public
+    command: >
+      sh -c "
+        mkdir -p /app/public/uploads &&
+        mkdir -p /app/public/metadata &&
+        npm install -g http-server &&
+        http-server /app/public -p 3001 --cors"
+    ports:
+      - "3001:3001"
     restart: unless-stopped
 
 volumes:

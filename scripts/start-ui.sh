@@ -108,33 +108,80 @@ run_service_with_logs() {
 # Function to check if blockchain is accessible
 check_blockchain_status() {
   local status_code=0
-  local timeout=10
+  local timeout=15  # Increased from 10 to 15 seconds
   local retries=0
-  local max_retries=3
+  local max_retries=5  # Increased from 3 to 5 retries
+  local NETWORK_CONFIG_PATH="$BASE_DIR/packages/nextjs/public/network-status.json"
   
   echo -e "${YELLOW}Checking blockchain network status...${NC}"
   
+  # Make sure the network status file exists and is writable
+  mkdir -p "$(dirname "$NETWORK_CONFIG_PATH")"
+  
+  # First, check if blockchain is running by checking its PID file
+  if [ -f "$SCRIPT_DIR/logs/blockchain.pid" ]; then
+    local blockchain_pid=$(cat "$SCRIPT_DIR/logs/blockchain.pid")
+    if ps -p $blockchain_pid > /dev/null; then
+      echo -e "${GREEN}✓ Blockchain process found (PID: $blockchain_pid)${NC}"
+    else
+      echo -e "${YELLOW}Warning: Blockchain PID file exists but process is not running.${NC}"
+      echo -e "${YELLOW}Starting the blockchain network now...${NC}"
+      
+      # Try to start the blockchain automatically
+      "$SCRIPT_DIR/start-blockchain-network.sh" > "$LOG_DIR/blockchain_restart.log" 2>&1 &
+      echo -e "${YELLOW}Blockchain network starting in background. Check $LOG_DIR/blockchain_restart.log for details.${NC}"
+      echo -e "${YELLOW}Waiting 10 seconds for blockchain to initialize...${NC}"
+      sleep 10
+    fi
+  else
+    echo -e "${YELLOW}Warning: No blockchain PID file found. Blockchain might not be running.${NC}"
+  fi
+
+  # Try to get network status with curl with improved error handling and diagnostics
+  echo -e "${YELLOW}Testing RPC connection to http://localhost:8545...${NC}"
   while [ $retries -lt $max_retries ]; do
+    echo -e "${YELLOW}Connection attempt $((retries+1))/${max_retries} with $timeout second timeout...${NC}"
+    
     # Try to get network status with curl with proper error handling
-    local response=$(curl -s -m 10 -X POST -H "Content-Type: application/json" --data '{"jsonrpc":"2.0","method":"net_version","params":[],"id":1}' http://localhost:8545)
+    local response=$(curl -s -m $timeout -X POST -H "Content-Type: application/json" --data '{"jsonrpc":"2.0","method":"net_version","params":[],"id":1}' http://localhost:8545)
+    local curl_status=$?
+    
+    if [ $curl_status -eq 28 ]; then
+      echo -e "${RED}Connection timed out after $timeout seconds${NC}"
+    elif [ $curl_status -ne 0 ]; then
+      echo -e "${RED}Connection error (curl status: $curl_status)${NC}"
+    fi
     
     # Check if response contains result field (valid JSON-RPC response)
-    if [ $? -eq 0 ] && echo "$response" | grep -q "result"; then
+    if [ $curl_status -eq 0 ] && echo "$response" | grep -q "result"; then
       echo -e "${GREEN}✓ Blockchain network is accessible${NC}"
       
+      # Update network status file to indicate blockchain is running
+      local timestamp=$(date +%s)
+      echo '{
+        "isRunning": true,
+        "networkType": "local",
+        "message": "Using local Hardhat blockchain network",
+        "severity": "info",
+        "timestamp": "'$timestamp'",
+        "apiEndpoint": "http://localhost:3000/api",
+        "lastRefresh": "'$timestamp'",
+        "timeoutMs": 30000,
+        "retries": 5
+      }' > "$NETWORK_CONFIG_PATH"
+      
+      echo -e "${GREEN}✓ Updated network status file to indicate blockchain is running${NC}"
+      
       # Check if contracts are deployed by trying to get block number
-      # This is a basic check - if block number is very low, contracts might not be deployed
-      local block_response=$(curl -s -m 10 -X POST -H "Content-Type: application/json" --data '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}' http://localhost:8545)
+      local block_response=$(curl -s -m $timeout -X POST -H "Content-Type: application/json" --data '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}' http://localhost:8545)
       local block_number=$(echo $block_response | grep -o '"result":"0x[0-9a-f]*"' | cut -d'"' -f4)
       if [ ! -z "$block_number" ]; then
         echo -e "${YELLOW}Current block number: $block_number${NC}"
         # Convert hex block number to decimal for comparison
-        local dec_block=$(printf "%d" $block_number)
+        local dec_block=$(printf "%d" $block_number 2>/dev/null || echo "0")
         if [ "$dec_block" -lt 5 ]; then
           echo -e "${YELLOW}Warning: Blockchain is at a very low block number.${NC}"
           echo -e "${YELLOW}NFT contracts might not be deployed yet.${NC}"
-          echo -e "${YELLOW}Consider running deployment scripts in components/erc721 and components/erc1155 directories.${NC}"
-          echo -e "${CYAN}Command to deploy contracts: cd /path/to/component && yarn deploy${NC}"
         fi
       fi
       
@@ -142,15 +189,40 @@ check_blockchain_status() {
       break
     else
       echo -e "${YELLOW}Waiting for blockchain... (Attempt $((retries+1))/${max_retries})${NC}"
+      # Print the response for debugging
+      if [ ! -z "$response" ]; then
+        echo -e "${YELLOW}Response: $response${NC}"
+      fi
       retries=$((retries+1))
       sleep $timeout
     fi
   done
   
   if [ $status_code -ne 1 ]; then
-    echo -e "${YELLOW}Warning: Blockchain network may not be running.${NC}"
-    echo -e "${YELLOW}Please ensure you've started the blockchain network using ./scripts/start-blockchain-network.sh${NC}"
+    echo -e "${RED}ERROR: Cannot connect to blockchain network after $max_retries attempts.${NC}"
+    echo -e "${YELLOW}Please ensure you've started the blockchain network using:${NC}"
+    echo -e "${CYAN}./scripts/start-blockchain-network.sh${NC}"
     echo -e "${RED}NFT functionality will not work without a running blockchain network.${NC}"
+    echo -e "${YELLOW}Common troubleshooting steps:${NC}"
+    echo -e "  ${YELLOW}1. Make sure port 8545 is not being used by another process${NC}"
+    echo -e "  ${YELLOW}2. Check if there are any errors in $LOG_DIR/blockchain.log${NC}"
+    echo -e "  ${YELLOW}3. Try restarting the blockchain with ./scripts/start-blockchain-network.sh${NC}"
+    
+    # Update network status file to indicate blockchain is not running
+    local timestamp=$(date +%s)
+    echo '{
+      "isRunning": false,
+      "networkType": "local",
+      "message": "Local blockchain network is not running. NFT features will not work.",
+      "severity": "error",
+      "timestamp": "'$timestamp'",
+      "apiEndpoint": "http://localhost:3000/api",
+      "lastRefresh": "'$timestamp'",
+      "timeoutMs": 30000,
+      "retries": 5
+    }' > "$NETWORK_CONFIG_PATH"
+    
+    echo -e "${YELLOW}Updated network status file to indicate blockchain is not running${NC}"
     echo -e "${YELLOW}Continuing UI startup anyway...${NC}"
   fi
   
@@ -230,96 +302,28 @@ check_node_version() {
   return 0
 }
 
-# Function to deploy NFT contracts
+# Function to deploy NFT contracts - Now moved to start-blockchain-network.sh
 deploy_nft_contracts() {
-  print_header "Deploying NFT Contracts"
+  print_header "Contract Deployment Moved"
+  echo -e "${YELLOW}Note: NFT contract deployment has been moved to start-blockchain-network.sh${NC}"
+  echo -e "${YELLOW}Contracts are now deployed when the blockchain starts, not when the UI restarts${NC}"
+  echo -e "${YELLOW}This ensures contract addresses remain stable across UI restarts${NC}"
   
-  # Check if blockchain is running first
-  echo -e "${YELLOW}Checking if blockchain network is running...${NC}"
-  local response=$(curl -s -m 10 -X POST -H "Content-Type: application/json" --data '{"jsonrpc":"2.0","method":"net_version","params":[],"id":1}' http://localhost:8545)
-  
-  # If blockchain not running, try to start it
-  if [ $? -ne 0 ] || ! echo "$response" | grep -q "result"; then
-    echo -e "${YELLOW}Blockchain network not detected. Attempting to start it...${NC}"
-    echo -e "${YELLOW}Running blockchain startup script...${NC}"
-    
-    # Try to start the blockchain network
-    "$SCRIPT_DIR/start-blockchain.sh" &
-    local blockchain_pid=$!
-    sleep 15
-    
-    # Check if blockchain started successfully
-    response=$(curl -s -m 10 -X POST -H "Content-Type: application/json" --data '{"jsonrpc":"2.0","method":"net_version","params":[],"id":1}' http://localhost:8545)
-    if [ $? -ne 0 ] || ! echo "$response" | grep -q "result"; then
-      echo -e "${RED}✗ Failed to start blockchain network. Check if hardhat is installed properly.${NC}"
-      echo -e "${YELLOW}Installing hardhat globally...${NC}"
-      npm install --global hardhat
-      echo -e "${YELLOW}Starting blockchain manually with npx...${NC}"
-      cd "$BASE_DIR/packages/hardhat"
-      npx hardhat node --hostname 127.0.0.1 --port 8545 >> "$LOG_DIR/blockchain.log" 2>&1 &
-      blockchain_pid=$!
-      sleep 15
-      
-      # Check again if blockchain started
-      response=$(curl -s -m 10 -X POST -H "Content-Type: application/json" --data '{"jsonrpc":"2.0","method":"net_version","params":[],"id":1}' http://localhost:8545)
-      if [ $? -ne 0 ] || ! echo "$response" | grep -q "result"; then
-        echo -e "${RED}✗ Failed to start blockchain network after multiple attempts.${NC}"
-        echo -e "${YELLOW}Continuing without blockchain. NFT functions will not work properly.${NC}"
-        cd "$BASE_DIR"
-        return 1
-      fi
-    fi
-    echo -e "${GREEN}✓ Blockchain network started successfully${NC}"
+  # Check if contracts appear to be deployed by looking for addresses.json
+  local addresses_file="$BASE_DIR/packages/nextjs/contracts/addresses.json"
+  if [ ! -f "$addresses_file" ]; then
+    echo -e "${RED}Warning: Contract addresses file not found. Contracts may not be deployed.${NC}"
+    echo -e "${YELLOW}To deploy contracts, please restart the blockchain with:${NC}"
+    echo -e "${CYAN}./scripts/start-blockchain-network.sh${NC}"
   else
-    echo -e "${GREEN}✓ Blockchain network is already running${NC}"
-  fi
-  
-  echo -e "${YELLOW}Deploying ERC721 contracts...${NC}"
-  
-  # Deploy ERC721 contracts
-  cd "$BASE_DIR/components/erc721"
-  echo "Installing contract dependencies..."
-  npm install >> "$LOG_DIR/erc721_deploy.log" 2>&1
-  if [ $? -ne 0 ]; then
-    echo -e "${RED}✗ Failed to install ERC721 dependencies. Check $LOG_DIR/erc721_deploy.log${NC}"
-    echo -e "${YELLOW}NFT creation functionality might not work properly.${NC}"
-  else
-    echo "Compiling and deploying ERC721 contracts..."
-    npx hardhat run scripts/deploy.js --network localhost >> "$LOG_DIR/erc721_deploy.log" 2>&1
-    if [ $? -ne 0 ]; then
-      echo -e "${RED}✗ Failed to deploy ERC721 contracts. Check $LOG_DIR/erc721_deploy.log${NC}"
-      echo -e "${YELLOW}Last 10 lines of log:${NC}"
-      tail -n 10 "$LOG_DIR/erc721_deploy.log"
+    echo -e "${GREEN}Found contract addresses file. Contracts appear to be deployed.${NC}"
+    if command -v jq &> /dev/null; then
+      echo -e "${YELLOW}Current contract addresses:${NC}"
+      jq '.local' "$addresses_file"
     else
-      echo -e "${GREEN}✓ ERC721 contracts deployed successfully${NC}"
+      echo -e "${YELLOW}Contract addresses file exists at: $addresses_file${NC}"
     fi
   fi
-  
-  # Deploy ERC1155 contracts
-  echo -e "${YELLOW}Deploying ERC1155 contracts...${NC}"
-  cd "$BASE_DIR/components/erc1155"
-  echo "Installing contract dependencies..."
-  npm install >> "$LOG_DIR/erc1155_deploy.log" 2>&1
-  if [ $? -ne 0 ]; then
-    echo -e "${RED}✗ Failed to install ERC1155 dependencies. Check $LOG_DIR/erc1155_deploy.log${NC}"
-    echo -e "${YELLOW}NFT creation functionality might not work properly.${NC}"
-  else
-    echo "Compiling and deploying ERC1155 contracts..."
-    npx hardhat run scripts/deploy.js --network localhost >> "$LOG_DIR/erc1155_deploy.log" 2>&1
-    if [ $? -ne 0 ]; then
-      echo -e "${RED}✗ Failed to deploy ERC1155 contracts. Check $LOG_DIR/erc1155_deploy.log${NC}"
-      echo -e "${YELLOW}Last 10 lines of log:${NC}"
-      tail -n 10 "$LOG_DIR/erc1155_deploy.log"
-    else
-      echo -e "${GREEN}✓ ERC1155 contracts deployed successfully${NC}"
-    fi
-  fi
-  
-  echo -e "${YELLOW}Note: Contract addresses have been saved to deployment logs.${NC}"
-  echo -e "${YELLOW}If your frontend cannot connect to them, check $LOG_DIR/erc721_deploy.log and $LOG_DIR/erc1155_deploy.log for addresses.${NC}"
-  
-  # Return to base directory
-  cd "$BASE_DIR"
 }
 
 # Create logs directory if it doesn't exist
@@ -363,10 +367,50 @@ fi
 
 echo -e "${GREEN}✓ Dependencies installed successfully${NC}"
 
+# Set environment variables for blockchain connection
+echo "Setting up environment variables for blockchain connection..."
+# Increase polling intervals to reduce timeout errors
+export NEXT_PUBLIC_NETWORK_POLLING_INTERVAL=60000
+export NEXT_PUBLIC_RPC_POLLING_INTERVAL=60000
+# Increase network request timeout from default 8 seconds to 30 seconds
+export NEXT_PUBLIC_NETWORK_TIMEOUT=30000
+export NEXT_PUBLIC_RPC_TIMEOUT=30000
+# Add retry options to prevent timeouts
+export NEXT_PUBLIC_NETWORK_RETRIES=5
+export NEXT_PUBLIC_RPC_RETRIES=5
+# Use a longer backoff time between retries
+export NEXT_PUBLIC_RETRY_BACKOFF=2000
+# Use fallback provider on timeout
+export NEXT_PUBLIC_USE_FALLBACK_PROVIDER=true
+# Use burner wallet for local development
+export NEXT_PUBLIC_USE_BURNER_WALLET=true
+export NEXT_PUBLIC_LOCAL_RPC_URL=http://localhost:8545
+# Disable ENS resolution on local network to prevent ENS resolver errors
+export NEXT_PUBLIC_DISABLE_ENS=true
+# Use browser localStorage instead of filesystem for NFT listings data
+export NEXT_PUBLIC_USE_LOCAL_STORAGE=true
+# Ensure proper connection options
+export NEXT_PUBLIC_ENABLE_NETWORK_RETRY=true
+
+# API environment variables to fix 500 errors
+echo "Setting up API environment variables for NFT creation..."
+export NEXT_PUBLIC_API_BASE_URL=http://localhost:3000
+export NEXT_PUBLIC_IPFS_GATEWAY=https://ipfs.io/ipfs/
+export NEXT_PUBLIC_ENABLE_MOCK_IPFS=true
+export NEXT_PUBLIC_API_TIMEOUT=30000
+# Enable detailed API error logging
+export NEXT_PUBLIC_DEBUG_API=true
+
+# Enhanced environment variables for better file watching and hot reloading
+echo "Setting up improved file watching and hot reloading..."
+export CHOKIDAR_USEPOLLING=true
+export FAST_REFRESH=true 
+export WATCHPACK_POLLING=true
+
 # Now try starting the NextJS dev server with npm and showing logs in real-time
-echo "Starting NextJS development server with real-time log output..."
+echo "Starting NextJS development server with enhanced file watching and hot reloading..."
 cd "$BASE_DIR/packages/nextjs"
-run_service_with_logs "frontend" "NEXT_PUBLIC_LOG_USER_ACTIONS=true npm run dev" "critical"
+run_service_with_logs "frontend" "NEXT_PUBLIC_LOG_USER_ACTIONS=true NEXT_PUBLIC_USE_LOCAL_STORAGE=true npm run dev:watch" "critical"
 
 # Display useful information
 print_header "UI READY WITH USER ACTION LOGGING"

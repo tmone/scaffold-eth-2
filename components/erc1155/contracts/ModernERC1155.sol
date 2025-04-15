@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 
 contract ModernERC1155 is ERC1155, Ownable {
-    using Strings for string;
+    using Strings for uint256;
     
     string public name;
     string public symbol;
@@ -39,6 +39,7 @@ contract ModernERC1155 is ERC1155, Ownable {
     
     function setURI(uint256 id, string memory newTokenURI) public onlyOwner {
         _tokenURIs[id] = newTokenURI;
+        emit URI(newTokenURI, id);
     }
     
     function uri(uint256 id) public view override returns (string memory) {
@@ -49,7 +50,14 @@ contract ModernERC1155 is ERC1155, Ownable {
             return tokenURI;
         }
         
-        // Otherwise return baseURI + id
-        return string(abi.encodePacked(super.uri(id), Strings.toString(id)));
+        // Otherwise return the baseURI from parent contract
+        string memory baseURI = super.uri(id);
+        
+        // If the baseURI doesn't end with a slash and isn't empty, append a slash
+        if (bytes(baseURI).length > 0 && bytes(baseURI)[bytes(baseURI).length - 1] != bytes1('/')) {
+            return string(abi.encodePacked(baseURI, "/", Strings.toString(id)));
+        }
+        
+        return string(abi.encodePacked(baseURI, Strings.toString(id)));
     }
 }

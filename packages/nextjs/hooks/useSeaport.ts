@@ -23,14 +23,13 @@ export const useSeaport = () => {
       const fetchedListings = await nftListingsService.getAllListings();
       setListings(fetchedListings);
       
-      // Only show this warning once if not in explicit local database mode
-      if (!isConnected && !localDatabaseOnly && fetchedListings.length > 0) {
-        notification.warning("No blockchain connection. Using local database only.");
-      }
+      // Removed the blockchain connection warning toast for local networks
+      // Local networks will now silently use the local database without showing the warning
     } catch (err) {
       console.error("Error loading NFT listings:", err);
       setError(err instanceof Error ? err : new Error("Failed to load listings"));
       
+      // Keep this error notification as it's for actual errors, not just connection state
       notification.error("Failed to load NFT listings. Please try again.");
     } finally {
       setIsLoading(false);

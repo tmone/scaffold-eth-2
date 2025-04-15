@@ -1,172 +1,139 @@
 
-Executing command: NEXT_PUBLIC_LOG_USER_ACTIONS=true npm run dev
+Executing command: NEXT_PUBLIC_LOG_USER_ACTIONS=true NEXT_PUBLIC_USE_LOCAL_STORAGE=true npm run dev:watch
 
-> @se-2/nextjs@0.1.0 dev
-> next dev
+> @se-2/nextjs@0.1.0 dev:watch
+> concurrently "npm run dev" "npm run watch"
 
- ⚠ Found lockfile missing swc dependencies, patching...
- ⨯ Failed to patch lockfile, please try uninstalling and reinstalling next in this workspace
-Error: Failed to get registry from "yarn".
-    at Array.map (<anonymous>) {
-  [cause]: Error: Command failed: yarn config get registry 
-      at Array.map (<anonymous>) {
-    status: 1,
-    signal: null,
-    output: [
-      null,
-      <Buffer 1b 5b 33 31 6d 1b 5b 31 6d 55 73 61 67 65 20 45 72 72 6f 72 1b 5b 32 32 6d 1b 5b 33 39 6d 3a 20 43 6f 75 6c 64 6e 27 74 20 66 69 6e 64 20 61 20 63 6f ... 98 more bytes>,
-      <Buffer >
-    ],
-    pid: 122562,
-    stdout: <Buffer 1b 5b 33 31 6d 1b 5b 31 6d 55 73 61 67 65 20 45 72 72 6f 72 1b 5b 32 32 6d 1b 5b 33 39 6d 3a 20 43 6f 75 6c 64 6e 27 74 20 66 69 6e 64 20 61 20 63 6f ... 98 more bytes>,
-    stderr: <Buffer >
-  }
-}
- ⚠ Port 3000 is in use, using available port 3001 instead.
-   ▲ Next.js 15.3.0
-   - Local:        http://localhost:3001
-   - Network:      http://10.255.255.254:3001
-
- ✓ Starting...
- ⚠ Found lockfile missing swc dependencies, patching...
- ⨯ Failed to patch lockfile, please try uninstalling and reinstalling next in this workspace
-Error: Failed to get registry from "yarn".
-    at Array.map (<anonymous>) {
-  [cause]: Error: Command failed: yarn config get registry 
-      at Array.map (<anonymous>) {
-    status: 1,
-    signal: null,
-    output: [
-      null,
-      <Buffer 1b 5b 33 31 6d 1b 5b 31 6d 55 73 61 67 65 20 45 72 72 6f 72 1b 5b 32 32 6d 1b 5b 33 39 6d 3a 20 43 6f 75 6c 64 6e 27 74 20 66 69 6e 64 20 61 20 63 6f ... 98 more bytes>,
-      <Buffer >
-    ],
-    pid: 122899,
-    stdout: <Buffer 1b 5b 33 31 6d 1b 5b 31 6d 55 73 61 67 65 20 45 72 72 6f 72 1b 5b 32 32 6d 1b 5b 33 39 6d 3a 20 43 6f 75 6c 64 6e 27 74 20 66 69 6e 64 20 61 20 63 6f ... 98 more bytes>,
-    stderr: <Buffer >
-  }
-}
- ✓ Ready in 11.1s
- ○ Compiling / ...
-
-🌼   daisyUI 4.12.10
-├─ ✔︎ 2 themes added		https://daisyui.com/docs/themes
-╰─ ❤︎ Support daisyUI project:	https://opencollective.com/daisyui
-
- ⨯ ./components/UserActionLogger.tsx
-Error:   [31mx[0m You're importing a component that needs `useEffect`. This React hook only works in a client component. To fix, mark the file (or its parent) with the `"use client"` directive.
-  [31m|[0m
-  [31m|[0m  Learn more: https://nextjs.org/docs/app/api-reference/directives/use-client
-  [31m|[0m
-
-   ,-[[36;1;4m/home/tmone/opensea-qc/packages/nextjs/components/UserActionLogger.tsx[0m:1:1]
- [2m1[0m | import { useEffect } from 'react';
-   : [35;1m         ^^^^^^^^^[0m
- [2m2[0m | 
- [2m3[0m | /**
- [2m4[0m |  * A component that logs user interactions to make them visible in the console
-   `----
-
-Import trace for requested module:
-./components/UserActionLogger.tsx
-./app/layout.tsx
- ⨯ ./components/UserActionLogger.tsx
-Error:   [31mx[0m You're importing a component that needs `useEffect`. This React hook only works in a client component. To fix, mark the file (or its parent) with the `"use client"` directive.
-  [31m|[0m
-  [31m|[0m  Learn more: https://nextjs.org/docs/app/api-reference/directives/use-client
-  [31m|[0m
-
-   ,-[[36;1;4m/home/tmone/opensea-qc/packages/nextjs/components/UserActionLogger.tsx[0m:1:1]
- [2m1[0m | import { useEffect } from 'react';
-   : [35;1m         ^^^^^^^^^[0m
- [2m2[0m | 
- [2m3[0m | /**
- [2m4[0m |  * A component that logs user interactions to make them visible in the console
-   `----
-
-Import trace for requested module:
-./components/UserActionLogger.tsx
-./app/layout.tsx
- ⨯ ./components/UserActionLogger.tsx
-Error:   [31mx[0m You're importing a component that needs `useEffect`. This React hook only works in a client component. To fix, mark the file (or its parent) with the `"use client"` directive.
-  [31m|[0m
-  [31m|[0m  Learn more: https://nextjs.org/docs/app/api-reference/directives/use-client
-  [31m|[0m
-
-   ,-[[36;1;4m/home/tmone/opensea-qc/packages/nextjs/components/UserActionLogger.tsx[0m:1:1]
- [2m1[0m | import { useEffect } from 'react';
-   : [35;1m         ^^^^^^^^^[0m
- [2m2[0m | 
- [2m3[0m | /**
- [2m4[0m |  * A component that logs user interactions to make them visible in the console
-   `----
-
-Import trace for requested module:
-./components/UserActionLogger.tsx
-./app/layout.tsx
- GET / 500 in 24740ms
- ⨯ ./components/WalletFunder.tsx
-Error:   [31mx[0m You're importing a component that needs `useState`. This React hook only works in a client component. To fix, mark the file (or its parent) with the `"use client"` directive.
-  [31m|[0m
-  [31m|[0m  Learn more: https://nextjs.org/docs/app/api-reference/directives/use-client
-  [31m|[0m
-
-   ,-[[36;1;4m/home/tmone/opensea-qc/packages/nextjs/components/WalletFunder.tsx[0m:1:1]
- [2m1[0m | import React, { useEffect, useState } from "react";
-   : [35;1m                           ^^^^^^^^[0m
- [2m2[0m | import { useAccount, useBalance } from "wagmi";
- [2m3[0m | import { parseEther } from "viem";
-   `----
-
-Import trace for requested module:
-./components/WalletFunder.tsx
-./app/layout.tsx
- GET /_next/static/webpack/767e6cbd549b480f.webpack.hot-update.json 500 in 2912ms
- ⚠ Fast Refresh had to perform a full reload due to a runtime error.
- ⨯ ./components/WalletFunder.tsx
-Error:   [31mx[0m You're importing a component that needs `useState`. This React hook only works in a client component. To fix, mark the file (or its parent) with the `"use client"` directive.
-  [31m|[0m
-  [31m|[0m  Learn more: https://nextjs.org/docs/app/api-reference/directives/use-client
-  [31m|[0m
-
-   ,-[[36;1;4m/home/tmone/opensea-qc/packages/nextjs/components/WalletFunder.tsx[0m:1:1]
- [2m1[0m | import React, { useEffect, useState } from "react";
-   : [35;1m                           ^^^^^^^^[0m
- [2m2[0m | import { useAccount, useBalance } from "wagmi";
- [2m3[0m | import { parseEther } from "viem";
-   `----
-
-Import trace for requested module:
-./components/WalletFunder.tsx
-./app/layout.tsx
- GET / 500 in 618ms
- ⨯ ./components/WalletFunder.tsx
-Error:   [31mx[0m You're importing a component that needs `useState`. This React hook only works in a client component. To fix, mark the file (or its parent) with the `"use client"` directive.
-  [31m|[0m
-  [31m|[0m  Learn more: https://nextjs.org/docs/app/api-reference/directives/use-client
-  [31m|[0m
-
-   ,-[[36;1;4m/home/tmone/opensea-qc/packages/nextjs/components/WalletFunder.tsx[0m:1:1]
- [2m1[0m | import React, { useEffect, useState } from "react";
-   : [35;1m                           ^^^^^^^^[0m
- [2m2[0m | import { useAccount, useBalance } from "wagmi";
- [2m3[0m | import { parseEther } from "viem";
-   `----
-
-Import trace for requested module:
-./components/WalletFunder.tsx
-./app/layout.tsx
-<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename '/home/tmone/opensea-qc/packages/nextjs/.next/cache/webpack/client-development/3.pack.gz_' -> '/home/tmone/opensea-qc/packages/nextjs/.next/cache/webpack/client-development/3.pack.gz'
- ✓ Compiled in 1834ms (7492 modules)
- ✓ Compiled /_not-found in 2.7s (7703 modules)
- ○ Compiling / ...
- ✓ Compiled / in 677ms (3970 modules)
- ⚠ Fast Refresh had to perform a full reload due to a runtime error.
- GET / 200 in 1723ms
- GET /_next/static/webpack/767e6cbd549b480f.webpack.hot-update.json 404 in 4432ms
- GET / 200 in 52ms
- HEAD / 200 in 34ms
- ✓ Compiled in 921ms (7492 modules)
- ✓ Compiled in 1054ms (7828 modules)
- GET / 200 in 139ms
-<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename '/home/tmone/opensea-qc/packages/nextjs/.next/cache/webpack/client-development/0.pack.gz_' -> '/home/tmone/opensea-qc/packages/nextjs/.next/cache/webpack/client-development/0.pack.gz'
+[0] 
+[0] > @se-2/nextjs@0.1.0 dev
+[0] > next dev
+[0] 
+[1] 
+[1] > @se-2/nextjs@0.1.0 watch
+[1] > nodemon --watch '../hardhat/artifacts' --watch '../hardhat/contracts' --watch 'contracts' --watch 'public' --ext '*' --exec 'touch ./app/page.tsx'
+[1] 
+[1] [33m[nodemon] 3.1.9[39m
+[1] [33m[nodemon] to restart at any time, enter `rs`[39m
+[1] [33m[nodemon] watching path(s): ../hardhat/artifacts/**/* ../hardhat/contracts/**/* contracts/**/* public/**/*[39m
+[1] [33m[nodemon] watching extensions: (all)[39m
+[1] [32m[nodemon] starting `touch ./app/page.tsx`[39m
+[1] [32m[nodemon] clean exit - waiting for changes before restart[39m
+[0]  ⚠ Found lockfile missing swc dependencies, patching...
+[0]  ⨯ Failed to patch lockfile, please try uninstalling and reinstalling next in this workspace
+[0] Error: Failed to get registry from "yarn".
+[0]     at Array.map (<anonymous>) {
+[0]   [cause]: Error: Command failed: yarn config get registry 
+[0]       at Array.map (<anonymous>) {
+[0]     status: 1,
+[0]     signal: null,
+[0]     output: [
+[0]       null,
+[0]       <Buffer 1b 5b 33 31 6d 1b 5b 31 6d 55 73 61 67 65 20 45 72 72 6f 72 1b 5b 32 32 6d 1b 5b 33 39 6d 3a 20 43 6f 75 6c 64 6e 27 74 20 66 69 6e 64 20 61 20 63 6f ... 98 more bytes>,
+[0]       <Buffer >
+[0]     ],
+[0]     pid: 72767,
+[0]     stdout: <Buffer 1b 5b 33 31 6d 1b 5b 31 6d 55 73 61 67 65 20 45 72 72 6f 72 1b 5b 32 32 6d 1b 5b 33 39 6d 3a 20 43 6f 75 6c 64 6e 27 74 20 66 69 6e 64 20 61 20 63 6f ... 98 more bytes>,
+[0]     stderr: <Buffer >
+[0]   }
+[0] }
+[0]    ▲ Next.js 15.3.0
+[0]    - Local:        http://localhost:3000
+[0]    - Network:      http://10.255.255.254:3000
+[0] 
+[0]  ✓ Starting...
+[0]  ⚠ Found lockfile missing swc dependencies, patching...
+[0]  ⨯ Failed to patch lockfile, please try uninstalling and reinstalling next in this workspace
+[0] Error: Failed to get registry from "yarn".
+[0]     at Array.map (<anonymous>) {
+[0]   [cause]: Error: Command failed: yarn config get registry 
+[0]       at Array.map (<anonymous>) {
+[0]     status: 1,
+[0]     signal: null,
+[0]     output: [
+[0]       null,
+[0]       <Buffer 1b 5b 33 31 6d 1b 5b 31 6d 55 73 61 67 65 20 45 72 72 6f 72 1b 5b 32 32 6d 1b 5b 33 39 6d 3a 20 43 6f 75 6c 64 6e 27 74 20 66 69 6e 64 20 61 20 63 6f ... 98 more bytes>,
+[0]       <Buffer >
+[0]     ],
+[0]     pid: 73148,
+[0]     stdout: <Buffer 1b 5b 33 31 6d 1b 5b 31 6d 55 73 61 67 65 20 45 72 72 6f 72 1b 5b 32 32 6d 1b 5b 33 39 6d 3a 20 43 6f 75 6c 64 6e 27 74 20 66 69 6e 64 20 61 20 63 6f ... 98 more bytes>,
+[0]     stderr: <Buffer >
+[0]   }
+[0] }
+[0]  ✓ Ready in 11.3s
+[0]  ○ Compiling /debug/blockchain ...
+[0] 
+[0] 🌼   daisyUI 4.12.10
+[0] ├─ ✔︎ 2 themes added		https://daisyui.com/docs/themes
+[0] ╰─ ❤︎ Support daisyUI project:	https://opencollective.com/daisyui
+[0] 
+[0]  ✓ Compiled /debug/blockchain in 10s (7485 modules)
+[0]  GET /debug/blockchain 200 in 10901ms
+[0]  ○ Compiling / ...
+[0]  ✓ Compiled / in 3.5s (7683 modules)
+[0]  GET / 200 in 4156ms
+[0]  HEAD / 200 in 34ms
+[0]  ○ Compiling /api/contracts ...
+[0]  ✓ Compiled /api/contracts in 3s (7680 modules)
+[0]  GET /api/contracts?network=local&contractName=Creature 200 in 3065ms
+[0]  GET /api/contracts?network=local&contractName=Creature 200 in 7ms
+[0]  ○ Compiling /api/upload ...
+[0]  ✓ Compiled /api/upload in 1167ms (7699 modules)
+[0] 📤 File upload API called
+[0] (node:72738) ExperimentalWarning: buffer.File is an experimental feature and might change at any time
+[0] (Use `node --trace-warnings ...` to show where the warning was created)
+[0] ✅ File upload successful - storing in local image server
+[0] File saved to: /home/tmone/opensea-qc/packages/nextjs/public/uploads/024bf25f-b287-4225-b85c-87b43815e88b.jfif
+[0] Local URL: /uploads/024bf25f-b287-4225-b85c-87b43815e88b.jfif
+[0] File URL: http://localhost:3001/uploads/024bf25f-b287-4225-b85c-87b43815e88b.jfif
+[0]  POST /api/upload 200 in 1319ms
+[1] [32m[nodemon] restarting due to changes...[39m
+[1] [32m[nodemon] starting `touch ./app/page.tsx`[39m
+[1] [32m[nodemon] clean exit - waiting for changes before restart[39m
+[0]  ○ Compiling /api/metadata ...
+[0]  ✓ Compiled /api/metadata in 983ms (7819 modules)
+[0] 📝 Metadata API called
+[0] ✅ Metadata creation successful - storing in local server
+[0] Metadata saved to: /home/tmone/opensea-qc/packages/nextjs/public/metadata/58b1ab7b-d2d4-436e-a7da-6a676b01e88a.json
+[0] Local URL: /metadata/58b1ab7b-d2d4-436e-a7da-6a676b01e88a.json
+[0] File URL: http://localhost:3001/metadata/58b1ab7b-d2d4-436e-a7da-6a676b01e88a.json
+[0] Metadata: {
+[0]   name: 'QUNK',
+[0]   description: 'TEST',
+[0]   image: 'ipfs://QmcJwbxBCHvFG7JQNTWaAEHqWvmq1KVxj8zWqFc3nPMiPM',
+[0]   attributes: []
+[0] }
+[0]  POST /api/metadata 200 in 1278ms
+[1] [32m[nodemon] restarting due to changes...[39m
+[1] [32m[nodemon] starting `touch ./app/page.tsx`[39m
+[1] [32m[nodemon] clean exit - waiting for changes before restart[39m
+[0]  ✓ Compiled in 7.5s (7833 modules)
+[0]  GET / 200 in 1140ms
+[0]  GET / 200 in 2312ms
+[0]  HEAD / 200 in 131ms
+[0]  GET /api/contracts?network=local&contractName=Creature 200 in 45ms
+[0]  GET /api/contracts?network=local&contractName=Creature 200 in 11ms
+[0] 📤 File upload API called
+[0] ✅ File upload successful - storing in local image server
+[0] File saved to: /home/tmone/opensea-qc/packages/nextjs/public/uploads/837a6b23-eb27-4538-9d40-be5d6d5b4221.png
+[0] Local URL: /uploads/837a6b23-eb27-4538-9d40-be5d6d5b4221.png
+[0] File URL: http://localhost:3001/uploads/837a6b23-eb27-4538-9d40-be5d6d5b4221.png
+[0]  POST /api/upload 200 in 111ms
+[0] 📝 Metadata API called
+[0] ✅ Metadata creation successful - storing in local server
+[0] Metadata saved to: /home/tmone/opensea-qc/packages/nextjs/public/metadata/baf5a7c6-56b8-4c7e-b8ab-d7fe224f5609.json
+[0] Local URL: /metadata/baf5a7c6-56b8-4c7e-b8ab-d7fe224f5609.json
+[0] File URL: http://localhost:3001/metadata/baf5a7c6-56b8-4c7e-b8ab-d7fe224f5609.json
+[0] Metadata: {
+[0]   name: 'NFT Demo',
+[0]   description: 'Test',
+[0]   image: 'ipfs://QmV9tSDx9UiPeWExXEeH6aoDvmihvx6jD5eLb4jbTaKGps',
+[0]   attributes: []
+[0] }
+[0]  POST /api/metadata 200 in 51ms
+[1] [32m[nodemon] restarting due to changes...[39m
+[1] [32m[nodemon] starting `touch ./app/page.tsx`[39m
+[1] [32m[nodemon] clean exit - waiting for changes before restart[39m
+[0]  GET / 200 in 94ms
+[0]  ✓ Compiled in 2.7s (7833 modules)
+[0]  HEAD / 200 in 205522ms
+[0]  GET / 200 in 204171ms

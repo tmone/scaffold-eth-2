@@ -1,171 +1,198 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import { ethers } from "ethers";
+import { useState, useEffect } from 'react';
+import { ethers } from 'ethers';
 
 interface BlockchainStatus {
-  isConnected: boolean;
-  isLoading: boolean;
-  error: string | null;
-  lastChecked: number;
-  localDatabaseOnly: boolean;
-  networkInfo?: {
-    name: string;
-    chainId: number;
-    blockNumber?: number;
-  };
+  isRunning: boolean;
+  networkType: string;
+  message: string;
+  severity: "info" | "warning" | "error";
+  timestamp?: number;
+  apiEndpoint?: string;
+  lastRefresh?: number;
+  timeoutMs?: number;
+  retries?: number;
 }
 
-// Add configuration options to make the hook more flexible
-interface BlockchainStatusConfig {
-  rpcUrl?: string;
-  maxRetries?: number;
-  retryDelay?: number;
-  connectionTimeout?: number;
-  checkInterval?: number;
-  useLocalDatabaseOnly?: boolean;
-}
-
-const DEFAULT_CONFIG: BlockchainStatusConfig = {
-  rpcUrl: "http://localhost:8545",
-  maxRetries: 5, // Increased from 3 to 5
-  retryDelay: 2000, // Increased from 1s to 2s
-  connectionTimeout: 8000, // Increased from 5s to 8s
-  checkInterval: 30000, // Keep the 30s interval
-  useLocalDatabaseOnly: false
-};
-
-export const useBlockchainStatus = (config?: BlockchainStatusConfig) => {
-  const effectiveConfig = { ...DEFAULT_CONFIG, ...config };
-  
+/**
+ * Custom hook to check blockchain status with improved timeout handling
+ */
+export const useBlockchainStatus = () => {
   const [status, setStatus] = useState<BlockchainStatus>({
-    isConnected: false,
-    isLoading: !effectiveConfig.useLocalDatabaseOnly,
-    error: null,
-    lastChecked: 0,
-    localDatabaseOnly: Boolean(effectiveConfig.useLocalDatabaseOnly)
+    isRunning: false,
+    networkType: 'unknown',
+    message: 'Checking blockchain status...',
+    severity: 'info',
   });
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+  const [localDatabaseOnly, setLocalDatabaseOnly] = useState(false);
+  const [networkInfo, setNetworkInfo] = useState<any>(null);
 
   const checkConnection = async () => {
-    // If we're in local database only mode, skip connection attempts
-    if (status.localDatabaseOnly) {
-      setStatus({
-        isConnected: false,
-        isLoading: false,
-        error: null,
-        lastChecked: Date.now(),
-        localDatabaseOnly: true
-      });
-      return false;
-    }
-
     try {
-      setStatus(prev => ({ ...prev, isLoading: true, error: null }));
+      setIsLoading(true);
+      setError(null);
 
-      let retries = 0;
-      const maxRetries = effectiveConfig.maxRetries || DEFAULT_CONFIG.maxRetries!;
-      const retryDelay = effectiveConfig.retryDelay || DEFAULT_CONFIG.retryDelay!;
-      const connectionTimeout = effectiveConfig.connectionTimeout || DEFAULT_CONFIG.connectionTimeout!;
-      
-      while (retries < maxRetries) {
-        try {
-          // Connect to the local blockchain network with provided URL
-          const provider = new ethers.providers.JsonRpcProvider(
-            effectiveConfig.rpcUrl || DEFAULT_CONFIG.rpcUrl
-          );
-          
-          // Set a timeout for the request
-          const networkPromise = provider.getNetwork();
-          const timeoutPromise = new Promise((_, reject) => {
-            setTimeout(() => reject(new Error(`Network request timeout after ${connectionTimeout/1000} seconds`)), 
-              connectionTimeout);
-          });
-          
-          // Race the network request against the timeout
-          const network = await Promise.race([networkPromise, timeoutPromise]) as ethers.providers.Network;
-          console.log(`Connected to network: ${network.name} (chainId: ${network.chainId})`);
-          
-          // Then try a simple request to ensure the node is fully responsive
-          const blockNumber = await provider.getBlockNumber();
-          console.log(`Current block number: ${blockNumber}`);
-          
-          // If we get here, we're connected - include network info in status
-          setStatus({
-            isConnected: true,
-            isLoading: false,
-            error: null,
-            lastChecked: Date.now(),
-            localDatabaseOnly: false,
-            networkInfo: {
-              name: network.name,
-              chainId: network.chainId,
-              blockNumber
-            }
-          });
-          
-          return true;
-        } catch (error) {
-          retries++;
-          console.error(`Blockchain connection attempt ${retries}/${maxRetries} failed:`, error);
-          
-          if (retries < maxRetries) {
-            console.log(`Retrying in ${retryDelay/1000} seconds...`);
-            await new Promise(resolve => setTimeout(resolve, retryDelay));
-          }
-        }
+      // If using local database only mode, skip blockchain checks
+      if (localDatabaseOnly) {
+        return false;
       }
+
+      // First try to fetch from public/network-status.json which is updated by the start-ui.sh script
+      try {
+        const timestamp = Date.now();
+        const response = await fetch(`/network-status.json?t=${timestamp}`, {
+          cache: 'no-store',
+          headers: {
+            'Cache-Control': 'no-cache',
+          },
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          setStatus(data);
+          // Sync the isRunning property to match expected interface
+          if (data.isRunning) {
+            setNetworkInfo({
+              name: data.networkType,
+              chainId: 31337, // Hardhat's default chain ID
+              blockNumber: undefined // We don't have this from the JSON file
+            });
+          }
+          setIsLoading(false);
+          return data.isRunning;
+        }
+      } catch (fetchError) {
+        console.warn("Could not fetch network status file, falling back to direct RPC check");
+      }
+
+      // If file fetch fails, check RPC directly with improved timeout handling
+      const RPC_URL = process.env.NEXT_PUBLIC_LOCAL_RPC_URL || 'http://localhost:8545';
+      const TIMEOUT = parseInt(process.env.NEXT_PUBLIC_NETWORK_TIMEOUT || '30000');
+      const MAX_RETRIES = parseInt(process.env.NEXT_PUBLIC_NETWORK_RETRIES || '3');
       
-      // If we get here, all attempts failed
-      throw new Error(`Failed to connect after ${maxRetries} attempts`);
-    } catch (error) {
-      console.error("Blockchain connection check failed:", error);
-      setStatus({
-        isConnected: false,
-        isLoading: false,
-        error: "Cannot connect to blockchain network. Please check your network connection and blockchain status.",
-        lastChecked: Date.now(),
-        localDatabaseOnly: false
+      console.log(`Checking blockchain at ${RPC_URL} with ${TIMEOUT}ms timeout, ${MAX_RETRIES} retries...`);
+
+      // Create a timeout promise
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error(`Network request timeout after ${TIMEOUT / 1000} seconds`)), TIMEOUT);
       });
+
+      // Create RPC check function with retries
+      const checkRpc = async (retries: number): Promise<{success: boolean, network?: ethers.providers.Network, blockNumber?: number}> => {
+        try {
+          if (retries <= 0) {
+            throw new Error("Max retries exceeded");
+          }
+
+          const provider = new ethers.providers.JsonRpcProvider(RPC_URL);
+          provider.pollingInterval = 10000; // Longer polling interval
+          
+          // Race against timeout
+          const network = await Promise.race([
+            provider.getNetwork(),
+            timeoutPromise
+          ]) as ethers.providers.Network;
+          
+          // Try to get block number if network connection worked
+          let blockNumber;
+          try {
+            blockNumber = await provider.getBlockNumber();
+          } catch (blockErr) {
+            console.warn("Could not get block number:", blockErr);
+          }
+          
+          console.log("Connected to network:", network, "Block number:", blockNumber);
+          return { success: true, network, blockNumber };
+        } catch (error) {
+          console.warn(`RPC check attempt failed (${MAX_RETRIES - retries + 1}/${MAX_RETRIES})`, error);
+          if (retries > 1) {
+            // Wait before retry with exponential backoff
+            const backoffTime = parseInt(process.env.NEXT_PUBLIC_RETRY_BACKOFF || '2000');
+            await new Promise(resolve => setTimeout(resolve, backoffTime));
+            return checkRpc(retries - 1);
+          }
+          return { success: false };
+        }
+      };
+
+      // Try to connect with retries
+      const result = await checkRpc(MAX_RETRIES);
       
+      if (result.success) {
+        setStatus({
+          isRunning: true,
+          networkType: result.network?.name || 'local',
+          message: 'Connected to local Hardhat network',
+          severity: 'info',
+          timestamp: Date.now(),
+          timeoutMs: TIMEOUT,
+          retries: MAX_RETRIES
+        });
+
+        // Set network info for the UI to show
+        if (result.network) {
+          setNetworkInfo({
+            name: result.network.name || 'unknown',
+            chainId: result.network.chainId,
+            blockNumber: result.blockNumber
+          });
+        }
+        
+        return true;
+      } else {
+        throw new Error("Could not connect to blockchain");
+      }
+    } catch (err: any) {
+      console.error("Blockchain connectivity error:", err);
+      setError(err);
+      setStatus({
+        isRunning: false,
+        networkType: 'unknown',
+        message: `Blockchain connection error: ${err.message || "Unknown error"}`,
+        severity: 'error',
+        timestamp: Date.now()
+      });
+      setNetworkInfo(null);
       return false;
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  // Toggle between local database mode and blockchain mode
+  // Toggle local database only mode
   const toggleLocalDatabaseOnly = (value: boolean) => {
-    console.log(`Toggling local database only mode: ${value}`);
-    setStatus(prev => ({
-      ...prev,
-      localDatabaseOnly: value,
-      isLoading: !value && !prev.isConnected,
-      error: value ? null : prev.error
-    }));
+    console.log(`Setting local database only mode: ${value}`);
+    setLocalDatabaseOnly(value);
     
     if (!value) {
-      // If switching to blockchain mode, try to connect
+      // If turning off local DB mode, try connecting to blockchain
       checkConnection();
     }
   };
 
-  // Check connection when component mounts
   useEffect(() => {
-    // Only check connection if not in local database only mode
-    if (!status.localDatabaseOnly) {
-      checkConnection();
+    checkConnection();
 
-      // Check connection periodically
-      const intervalId = setInterval(() => {
-        if (!status.localDatabaseOnly) {
-          checkConnection();
-        }
-      }, effectiveConfig.checkInterval || DEFAULT_CONFIG.checkInterval);
+    // Set up periodic polling for blockchain status
+    const POLLING_INTERVAL = parseInt(process.env.NEXT_PUBLIC_NETWORK_POLLING_INTERVAL || '60000');
+    const intervalId = setInterval(() => {
+      if (!localDatabaseOnly) {
+        checkConnection();
+      }
+    }, POLLING_INTERVAL);
+    
+    return () => clearInterval(intervalId);
+  }, [localDatabaseOnly]);
 
-      return () => clearInterval(intervalId);
-    }
-  }, [status.localDatabaseOnly]);
-
-  return {
-    ...status,
+  // Return a properly shaped object that matches what the components expect
+  return { 
+    isConnected: status.isRunning, 
+    isLoading, 
+    error: error?.message || null,
+    localDatabaseOnly,
+    networkInfo,
+    lastChecked: status.timestamp || 0,
     checkConnection,
     toggleLocalDatabaseOnly
   };

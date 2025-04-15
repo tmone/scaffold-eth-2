@@ -532,3 +532,433 @@ Run `npm audit` for details.
 Deploying ERC1155 NFT contracts...
 ModernERC1155 deployed to: 0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512
 ERC1155 deployment completed successfully!
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: '@opensea/seaport-js@4.0.4',
+npm warn EBADENGINE   required: { node: '>=20.0.0' },
+npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+npm warn EBADENGINE }
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: 'bgipfs@0.0.12',
+npm warn EBADENGINE   required: { node: '>=20.0.0' },
+npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+npm warn EBADENGINE }
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: 'got@14.4.7',
+npm warn EBADENGINE   required: { node: '>=20' },
+npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+npm warn EBADENGINE }
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: 'opensea-js@7.1.18',
+npm warn EBADENGINE   required: { node: '>=20.0.0' },
+npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+npm warn EBADENGINE }
+
+> se-2@0.0.1 postinstall
+> husky
+
+
+up to date, audited 4746 packages in 7s
+
+448 packages are looking for funding
+  run `npm fund` for details
+
+10 low severity vulnerabilities
+
+Some issues need review, and may require choosing
+a different dependency.
+
+Run `npm audit` for details.
+Deploying ERC1155 NFT contracts...
+ModernERC1155 deployed to: 0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512
+ERC1155 deployment completed successfully!
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: '@opensea/seaport-js@4.0.4',
+npm warn EBADENGINE   required: { node: '>=20.0.0' },
+npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+npm warn EBADENGINE }
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: 'bgipfs@0.0.12',
+npm warn EBADENGINE   required: { node: '>=20.0.0' },
+npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+npm warn EBADENGINE }
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: 'got@14.4.7',
+npm warn EBADENGINE   required: { node: '>=20' },
+npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+npm warn EBADENGINE }
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: 'opensea-js@7.1.18',
+npm warn EBADENGINE   required: { node: '>=20.0.0' },
+npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+npm warn EBADENGINE }
+
+> se-2@0.0.1 postinstall
+> husky
+
+
+up to date, audited 4746 packages in 7s
+
+448 packages are looking for funding
+  run `npm fund` for details
+
+10 low severity vulnerabilities
+
+Some issues need review, and may require choosing
+a different dependency.
+
+Run `npm audit` for details.
+Compiled 1 Solidity file successfully (evm target: london).
+Deploying ERC1155 NFT contracts...
+ModernERC1155 deployed to: 0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512
+ERC1155 deployment completed successfully!
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: '@opensea/seaport-js@4.0.4',
+npm warn EBADENGINE   required: { node: '>=20.0.0' },
+npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+npm warn EBADENGINE }
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: 'bgipfs@0.0.12',
+npm warn EBADENGINE   required: { node: '>=20.0.0' },
+npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+npm warn EBADENGINE }
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: 'got@14.4.7',
+npm warn EBADENGINE   required: { node: '>=20' },
+npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+npm warn EBADENGINE }
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: 'opensea-js@7.1.18',
+npm warn EBADENGINE   required: { node: '>=20.0.0' },
+npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+npm warn EBADENGINE }
+
+> se-2@0.0.1 postinstall
+> husky
+
+
+up to date, audited 4746 packages in 7s
+
+448 packages are looking for funding
+  run `npm fund` for details
+
+10 low severity vulnerabilities
+
+Some issues need review, and may require choosing
+a different dependency.
+
+Run `npm audit` for details.
+Deploying ERC1155 NFT contracts...
+ModernERC1155 deployed to: 0x7a2088a1bFc9d81c55368AE168C2C02570cB814F
+ERC1155 deployment completed successfully!
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: '@opensea/seaport-js@4.0.4',
+npm warn EBADENGINE   required: { node: '>=20.0.0' },
+npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+npm warn EBADENGINE }
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: 'bgipfs@0.0.12',
+npm warn EBADENGINE   required: { node: '>=20.0.0' },
+npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+npm warn EBADENGINE }
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: 'got@14.4.7',
+npm warn EBADENGINE   required: { node: '>=20' },
+npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+npm warn EBADENGINE }
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: 'opensea-js@7.1.18',
+npm warn EBADENGINE   required: { node: '>=20.0.0' },
+npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+npm warn EBADENGINE }
+
+> se-2@0.0.1 postinstall
+> husky
+
+
+up to date, audited 4746 packages in 7s
+
+448 packages are looking for funding
+  run `npm fund` for details
+
+10 low severity vulnerabilities
+
+Some issues need review, and may require choosing
+a different dependency.
+
+Run `npm audit` for details.
+Deploying ERC1155 NFT contracts...
+ModernERC1155 deployed to: 0xa82fF9aFd8f496c3d6ac40E2a0F282E47488CFc9
+ERC1155 deployment completed successfully!
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: '@opensea/seaport-js@4.0.4',
+npm warn EBADENGINE   required: { node: '>=20.0.0' },
+npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+npm warn EBADENGINE }
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: 'bgipfs@0.0.12',
+npm warn EBADENGINE   required: { node: '>=20.0.0' },
+npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+npm warn EBADENGINE }
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: 'got@14.4.7',
+npm warn EBADENGINE   required: { node: '>=20' },
+npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+npm warn EBADENGINE }
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: 'opensea-js@7.1.18',
+npm warn EBADENGINE   required: { node: '>=20.0.0' },
+npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+npm warn EBADENGINE }
+
+> se-2@0.0.1 postinstall
+> husky
+
+
+up to date, audited 4746 packages in 8s
+
+448 packages are looking for funding
+  run `npm fund` for details
+
+10 low severity vulnerabilities
+
+Some issues need review, and may require choosing
+a different dependency.
+
+Run `npm audit` for details.
+Deploying ERC1155 NFT contracts...
+ModernERC1155 deployed to: 0x95401dc811bb5740090279Ba06cfA8fcF6113778
+ERC1155 deployment completed successfully!
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: '@opensea/seaport-js@4.0.4',
+npm warn EBADENGINE   required: { node: '>=20.0.0' },
+npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+npm warn EBADENGINE }
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: 'bgipfs@0.0.12',
+npm warn EBADENGINE   required: { node: '>=20.0.0' },
+npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+npm warn EBADENGINE }
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: 'got@14.4.7',
+npm warn EBADENGINE   required: { node: '>=20' },
+npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+npm warn EBADENGINE }
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: 'opensea-js@7.1.18',
+npm warn EBADENGINE   required: { node: '>=20.0.0' },
+npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+npm warn EBADENGINE }
+
+> se-2@0.0.1 postinstall
+> husky
+
+
+up to date, audited 4746 packages in 7s
+
+448 packages are looking for funding
+  run `npm fund` for details
+
+10 low severity vulnerabilities
+
+Some issues need review, and may require choosing
+a different dependency.
+
+Run `npm audit` for details.
+Deploying ERC1155 NFT contracts...
+ModernERC1155 deployed to: 0x70e0bA845a1A0F2DA3359C97E0285013525FFC49
+ERC1155 deployment completed successfully!
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: '@opensea/seaport-js@4.0.4',
+npm warn EBADENGINE   required: { node: '>=20.0.0' },
+npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+npm warn EBADENGINE }
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: 'bgipfs@0.0.12',
+npm warn EBADENGINE   required: { node: '>=20.0.0' },
+npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+npm warn EBADENGINE }
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: 'got@14.4.7',
+npm warn EBADENGINE   required: { node: '>=20' },
+npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+npm warn EBADENGINE }
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: 'opensea-js@7.1.18',
+npm warn EBADENGINE   required: { node: '>=20.0.0' },
+npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+npm warn EBADENGINE }
+
+> se-2@0.0.1 postinstall
+> husky
+
+
+up to date, audited 4746 packages in 8s
+
+448 packages are looking for funding
+  run `npm fund` for details
+
+10 low severity vulnerabilities
+
+Some issues need review, and may require choosing
+a different dependency.
+
+Run `npm audit` for details.
+Deploying ERC1155 NFT contracts...
+ModernERC1155 deployed to: 0x99bbA657f2BbC93c02D617f8bA121cB8Fc104Acf
+ERC1155 deployment completed successfully!
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: '@opensea/seaport-js@4.0.4',
+npm warn EBADENGINE   required: { node: '>=20.0.0' },
+npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+npm warn EBADENGINE }
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: 'bgipfs@0.0.12',
+npm warn EBADENGINE   required: { node: '>=20.0.0' },
+npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+npm warn EBADENGINE }
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: 'got@14.4.7',
+npm warn EBADENGINE   required: { node: '>=20' },
+npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+npm warn EBADENGINE }
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: 'opensea-js@7.1.18',
+npm warn EBADENGINE   required: { node: '>=20.0.0' },
+npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+npm warn EBADENGINE }
+
+> se-2@0.0.1 postinstall
+> husky
+
+
+up to date, audited 4746 packages in 7s
+
+448 packages are looking for funding
+  run `npm fund` for details
+
+10 low severity vulnerabilities
+
+Some issues need review, and may require choosing
+a different dependency.
+
+Run `npm audit` for details.
+Deploying ERC1155 NFT contracts...
+ModernERC1155 deployed to: 0x8f86403A4DE0BB5791fa46B8e795C547942fE4Cf
+ERC1155 deployment completed successfully!
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: '@opensea/seaport-js@4.0.4',
+npm warn EBADENGINE   required: { node: '>=20.0.0' },
+npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+npm warn EBADENGINE }
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: 'bgipfs@0.0.12',
+npm warn EBADENGINE   required: { node: '>=20.0.0' },
+npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+npm warn EBADENGINE }
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: 'got@14.4.7',
+npm warn EBADENGINE   required: { node: '>=20' },
+npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+npm warn EBADENGINE }
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: 'opensea-js@7.1.18',
+npm warn EBADENGINE   required: { node: '>=20.0.0' },
+npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+npm warn EBADENGINE }
+
+> se-2@0.0.1 postinstall
+> husky
+
+
+up to date, audited 4746 packages in 7s
+
+448 packages are looking for funding
+  run `npm fund` for details
+
+10 low severity vulnerabilities
+
+Some issues need review, and may require choosing
+a different dependency.
+
+Run `npm audit` for details.
+Deploying ERC1155 NFT contracts...
+ModernERC1155 deployed to: 0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512
+ERC1155 deployment completed successfully!
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: '@opensea/seaport-js@4.0.4',
+npm warn EBADENGINE   required: { node: '>=20.0.0' },
+npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+npm warn EBADENGINE }
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: 'bgipfs@0.0.12',
+npm warn EBADENGINE   required: { node: '>=20.0.0' },
+npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+npm warn EBADENGINE }
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: 'got@14.4.7',
+npm warn EBADENGINE   required: { node: '>=20' },
+npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+npm warn EBADENGINE }
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: 'opensea-js@7.1.18',
+npm warn EBADENGINE   required: { node: '>=20.0.0' },
+npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+npm warn EBADENGINE }
+
+> se-2@0.0.1 postinstall
+> husky
+
+
+removed 128 packages, changed 2 packages, and audited 5255 packages in 8s
+
+452 packages are looking for funding
+  run `npm fund` for details
+
+10 low severity vulnerabilities
+
+Some issues need review, and may require choosing
+a different dependency.
+
+Run `npm audit` for details.
+Deploying ERC1155 NFT contracts...
+ModernERC1155 deployed to: 0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512
+ERC1155 deployment completed successfully!
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: '@opensea/seaport-js@4.0.4',
+npm warn EBADENGINE   required: { node: '>=20.0.0' },
+npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+npm warn EBADENGINE }
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: 'bgipfs@0.0.12',
+npm warn EBADENGINE   required: { node: '>=20.0.0' },
+npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+npm warn EBADENGINE }
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: 'got@14.4.7',
+npm warn EBADENGINE   required: { node: '>=20' },
+npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+npm warn EBADENGINE }
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: 'opensea-js@7.1.18',
+npm warn EBADENGINE   required: { node: '>=20.0.0' },
+npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+npm warn EBADENGINE }
+
+> se-2@0.0.1 postinstall
+> husky
+
+
+up to date, audited 4587 packages in 9s
+
+447 packages are looking for funding
+  run `npm fund` for details
+
+10 low severity vulnerabilities
+
+Some issues need review, and may require choosing
+a different dependency.
+
+Run `npm audit` for details.
+Deploying ERC1155 NFT contracts...
+ModernERC1155 deployed to: 0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512
+ERC1155 deployment completed successfully!
